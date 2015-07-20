@@ -150,7 +150,7 @@ namespace MLRat.Forms
                                     Updated = true;
                                     continue;
                                 }
-                                /* Broken
+                                /* Broken Checksum
                                 if (Hash.Md5(LoadedPlugins[ID].ClientPluginBytes) != checksum)
                                 {
                                     UpdatePlugin(client, ID);

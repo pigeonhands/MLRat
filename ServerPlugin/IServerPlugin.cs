@@ -13,6 +13,6 @@ namespace MLRat.Server
         void OnClientConnect(IClient client);
         void OnClientDisconnect(IClient client);
         void OnDataRetrieved(IClient client, object[] data);
-        void OnPluginLoad();
+        void OnPluginLoad(IServerUIHandler UIHost);
     }
 }

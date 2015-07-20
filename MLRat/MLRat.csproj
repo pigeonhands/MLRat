@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{BE801141-0D4D-4950-85C8-8E93C9D3312F}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MLRat</RootNamespace>
     <AssemblyName>MLRat</AssemblyName>
@@ -63,7 +63,9 @@
     <Compile Include="Networking\eSock.cs" />
     <Compile Include="Networking\MLClient.cs" />
     <Compile Include="Networking\MLClientData.cs" />
+    <Compile Include="Plugin\MLContextData.cs" />
     <Compile Include="Plugin\MLPlugin.cs" />
+    <Compile Include="Plugin\MLUiHost.cs" />
     <Compile Include="Plugin\pluginDisplay.cs">
       <SubType>UserControl</SubType>
     </Compile>

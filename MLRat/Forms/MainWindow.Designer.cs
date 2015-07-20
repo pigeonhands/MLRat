@@ -32,7 +32,6 @@
             this.clientList = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ClientContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.clientContextStripToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
@@ -42,7 +41,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.pluginPanel = new System.Windows.Forms.Panel();
-            this.ClientContextStrip.SuspendLayout();
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -54,7 +54,10 @@
             // clientList
             // 
             this.clientList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1});
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.clientList.ContextMenuStrip = this.ClientContextStrip;
             this.clientList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.clientList.FullRowSelect = true;
             this.clientList.GridLines = true;
@@ -72,16 +75,8 @@
             // 
             // ClientContextStrip
             // 
-            this.ClientContextStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.clientContextStripToolStripMenuItem});
             this.ClientContextStrip.Name = "ClientContextStrip";
-            this.ClientContextStrip.Size = new System.Drawing.Size(171, 26);
-            // 
-            // clientContextStripToolStripMenuItem
-            // 
-            this.clientContextStripToolStripMenuItem.Name = "clientContextStripToolStripMenuItem";
-            this.clientContextStripToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.clientContextStripToolStripMenuItem.Text = "ClientContextStrip";
+            this.ClientContextStrip.Size = new System.Drawing.Size(61, 4);
             // 
             // tabControl1
             // 
@@ -190,6 +185,16 @@
             this.pluginPanel.Size = new System.Drawing.Size(712, 330);
             this.pluginPanel.TabIndex = 0;
             // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "IP Address";
+            this.columnHeader2.Width = 138;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "OS";
+            this.columnHeader3.Width = 107;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -199,7 +204,6 @@
             this.Name = "MainWindow";
             this.Text = "MainWindow";
             this.Load += new System.EventHandler(this.MainWindow_Load);
-            this.ClientContextStrip.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
@@ -216,7 +220,6 @@
         private System.Windows.Forms.ListView clientList;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ContextMenuStrip ClientContextStrip;
-        private System.Windows.Forms.ToolStripMenuItem clientContextStripToolStripMenuItem;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
@@ -226,5 +229,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
     }
 }

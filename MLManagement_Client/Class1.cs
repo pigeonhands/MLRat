@@ -42,6 +42,6 @@ public class MLManagement_Client : IClientPlugin
     public void OnPluginLoad()
     {
         Console.WriteLine("[MLManagement] Loaded!");
-        Console.WriteLine("'Location: {0}", Environment.CurrentDirectory);
+        Console.WriteLine("Location: {0}", Environment.CurrentDirectory);
     }
 }

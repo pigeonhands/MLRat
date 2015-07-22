@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -70,6 +71,7 @@ namespace PluginCompiler
 
         private void button1_Click(object sender, EventArgs e)
         {
+            
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
                 ofd.Filter = "Dll File|*.dll";

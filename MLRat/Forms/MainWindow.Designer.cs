@@ -31,6 +31,8 @@
             this.components = new System.ComponentModel.Container();
             this.clientList = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ClientContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -41,8 +43,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.pluginPanel = new System.Windows.Forms.Panel();
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -73,6 +73,16 @@
             this.columnHeader1.Text = "Client Name";
             this.columnHeader1.Width = 149;
             // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "IP Address";
+            this.columnHeader2.Width = 138;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "OS";
+            this.columnHeader3.Width = 107;
+            // 
             // ClientContextStrip
             // 
             this.ClientContextStrip.Name = "ClientContextStrip";
@@ -89,7 +99,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(726, 362);
+            this.tabControl1.Size = new System.Drawing.Size(550, 306);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -172,7 +182,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(718, 336);
+            this.tabPage2.Size = new System.Drawing.Size(542, 280);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Plugins";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -182,24 +192,14 @@
             this.pluginPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pluginPanel.Location = new System.Drawing.Point(3, 3);
             this.pluginPanel.Name = "pluginPanel";
-            this.pluginPanel.Size = new System.Drawing.Size(712, 330);
+            this.pluginPanel.Size = new System.Drawing.Size(536, 274);
             this.pluginPanel.TabIndex = 0;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "IP Address";
-            this.columnHeader2.Width = 138;
-            // 
-            // columnHeader3
-            // 
-            this.columnHeader3.Text = "OS";
-            this.columnHeader3.Width = 107;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(726, 364);
+            this.ClientSize = new System.Drawing.Size(550, 308);
             this.Controls.Add(this.tabControl1);
             this.Name = "MainWindow";
             this.Text = "MainWindow";

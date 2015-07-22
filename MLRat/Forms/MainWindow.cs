@@ -93,20 +93,32 @@ namespace MLRat.Forms
                 Plugin = _plugin,
                 ContextData = entry
             };
-            _baseItem.Click += ContextMenu_Click;
+            if (entry.OnClick != null)
+                _baseItem.Click += ContextMenu_Click;
             if(entry.SubMenus != null)
-                AddMenuItem(_baseItem, entry);
+            {
+                foreach (var subentry in entry.SubMenus)
+                    AddMenuItem(_plugin, _baseItem, subentry);
+            }
             ClientContextStrip.Items.Add(_baseItem);
         }
 
-        void AddMenuItem(ToolStripMenuItem parent, MLRatContextEntry entry)
+        void AddMenuItem(MLPlugin _plugin, ToolStripMenuItem parent, MLRatContextEntry entry)
         {
             ToolStripMenuItem _menu = new ToolStripMenuItem();
             _menu.Text = entry.Text;
-            _menu.Tag = entry;
-            _menu.Click += ContextMenu_Click;
-            foreach (var subentrys in entry.SubMenus)
-                AddMenuItem(_menu, subentrys);
+            _menu.Tag = new MLContextData()
+            {
+                Plugin = _plugin,
+                ContextData = entry
+            };
+            if (entry.OnClick != null)
+                _menu.Click += ContextMenu_Click;
+            if (entry.SubMenus != null)
+            {
+                foreach (var subentrys in entry.SubMenus)
+                    AddMenuItem(_plugin, _menu, subentrys);
+            }
             parent.DropDownItems.Add(_menu);
         }
 

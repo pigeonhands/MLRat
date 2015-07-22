@@ -187,8 +187,15 @@ namespace MLRat.Networking
 
                 public void Send(params object[] args)
                 {
-                    byte[] serilisedData = Formatter.Serialize(args);
-                    NetworkSocket.BeginSend(serilisedData, 0, serilisedData.Length, SocketFlags.None, EndSend, null);
+                    try
+                    {
+                        byte[] serilisedData = Formatter.Serialize(args);
+                        NetworkSocket.BeginSend(serilisedData, 0, serilisedData.Length, SocketFlags.None, EndSend, null);
+                    }
+                    catch
+                    {
+                        //Not connected
+                    }
                 }
                 private void EndSend(IAsyncResult AR)
                 {

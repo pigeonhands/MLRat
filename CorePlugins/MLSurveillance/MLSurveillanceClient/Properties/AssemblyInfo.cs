@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("MLManagement_Client")]
+[assembly: AssemblyTitle("MLSurveillanceClient")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MLManagement_Client")]
+[assembly: AssemblyProduct("MLSurveillanceClient")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("9b271f26-00c9-493e-a4f4-0879b26e2724")]
+[assembly: Guid("7a6cec00-4a6c-45e0-a25d-3cab2f436ea6")]
 
 // Version information for an assembly consists of the following four values:
 //

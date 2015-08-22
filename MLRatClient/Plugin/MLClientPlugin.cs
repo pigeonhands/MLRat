@@ -36,8 +36,9 @@ namespace MLRatClient.Plugin
 
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
+                Console.WriteLine("Fail load reason: {0}", ex);
                 return false;
             }
         }

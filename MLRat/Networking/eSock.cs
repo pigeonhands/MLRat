@@ -161,7 +161,7 @@ namespace MLRat.Networking
                     RetrieveCallback, _client);
 
                 object[] RetrievedData = Formatter.Deserialize<object[]>(Packet);
-                if (OnDataRetrieved != null)
+                if (OnDataRetrieved != null && RetrievedData != null)
                     OnDataRetrieved(this, _client, RetrievedData);
 
             }
@@ -357,7 +357,7 @@ namespace MLRat.Networking
                 Buffer.BlockCopy(PacketBuffer, 0, Packet, 0, packetLength);
                 _globalSocket.BeginReceive(PacketBuffer, 0, PacketBuffer.Length, SocketFlags.None, EndRetrieve, null);
                 object[] data = Formatter.Deserialize<object[]>(Packet);
-                if (OnDataRetrieved != null)
+                if (OnDataRetrieved != null && data != null)
                     OnDataRetrieved(this, data);
             }
 
@@ -383,10 +383,17 @@ namespace MLRat.Networking
 
             public static t Deserialize<t>(byte[] input)
             {
-                BinaryFormatter bf = new BinaryFormatter();
-                using (MemoryStream ms = new MemoryStream(Decompress(input)))
+                try
                 {
-                    return (t)bf.Deserialize(ms);
+                    BinaryFormatter bf = new BinaryFormatter();
+                    using (MemoryStream ms = new MemoryStream(Decompress(input)))
+                    {
+                        return (t)bf.Deserialize(ms);
+                    }
+                }
+                catch
+                {
+                    return default(t);
                 }
             }
 

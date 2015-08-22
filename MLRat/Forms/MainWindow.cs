@@ -13,6 +13,7 @@ using MLRat.Networking;
 using System.Diagnostics;
 using MLRat.Cryptography;
 using MLRat.Server;
+using System.Threading;
 
 namespace MLRat.Forms
 {
@@ -47,7 +48,7 @@ namespace MLRat.Forms
         {
             if (plugin != null)
             {
-                Console.WriteLine("{0}: {1}", plugin.ClientPluginID, ex.Message);
+                Console.WriteLine("{0}: {1}", plugin.ClientPluginID, ex.ToString());
             }
             else
             {
@@ -298,6 +299,7 @@ namespace MLRat.Forms
                         Array.Copy(buffer, 0, Packet, 0, bytesRead);
                         client.Send(Guid.Empty, "pluginupdate", ID, Packet,
                             _pluginUpdate.Position == _pluginUpdate.Length);
+                        Thread.Sleep(100);
                     }
                 }
             }

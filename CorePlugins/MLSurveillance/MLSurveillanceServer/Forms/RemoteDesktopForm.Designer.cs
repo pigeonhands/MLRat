@@ -32,6 +32,7 @@
             this.btnStart = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
             this.nudDelay = new System.Windows.Forms.NumericUpDown();
+            this.cbMonitors = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbScreen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudDelay)).BeginInit();
             this.SuspendLayout();
@@ -74,14 +75,14 @@
             // nudDelay
             // 
             this.nudDelay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.nudDelay.Location = new System.Drawing.Point(219, 238);
+            this.nudDelay.Location = new System.Drawing.Point(366, 238);
             this.nudDelay.Maximum = new decimal(new int[] {
             3000,
             0,
             0,
             0});
             this.nudDelay.Minimum = new decimal(new int[] {
-            1,
+            100,
             0,
             0,
             0});
@@ -95,11 +96,24 @@
             0});
             this.nudDelay.ValueChanged += new System.EventHandler(this.nudDelay_ValueChanged);
             // 
+            // cbMonitors
+            // 
+            this.cbMonitors.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.cbMonitors.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbMonitors.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.cbMonitors.FormattingEnabled = true;
+            this.cbMonitors.Location = new System.Drawing.Point(219, 237);
+            this.cbMonitors.Name = "cbMonitors";
+            this.cbMonitors.Size = new System.Drawing.Size(141, 21);
+            this.cbMonitors.TabIndex = 4;
+            this.cbMonitors.SelectedIndexChanged += new System.EventHandler(this.cbMonitors_SelectedIndexChanged);
+            // 
             // RemoteDesktopForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(491, 261);
+            this.Controls.Add(this.cbMonitors);
             this.Controls.Add(this.nudDelay);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnStart);
@@ -119,5 +133,6 @@
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.NumericUpDown nudDelay;
+        private System.Windows.Forms.ComboBox cbMonitors;
     }
 }

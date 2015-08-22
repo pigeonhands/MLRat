@@ -28,6 +28,7 @@ namespace MLSurveillanceServer.Handlers
                     formHandler[client.ID].Close();
                     formHandler[client.ID].Dispose();
                 }
+                formHandler.Remove(client.ID);
             }
         }
 

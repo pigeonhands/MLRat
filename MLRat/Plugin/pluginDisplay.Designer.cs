@@ -64,7 +64,7 @@
             // 
             this.descLabel.AutoSize = true;
             this.descLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.descLabel.Location = new System.Drawing.Point(141, 40);
+            this.descLabel.Location = new System.Drawing.Point(141, 30);
             this.descLabel.Name = "descLabel";
             this.descLabel.Size = new System.Drawing.Size(41, 15);
             this.descLabel.TabIndex = 3;
@@ -74,7 +74,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(12, 40);
+            this.label3.Location = new System.Drawing.Point(12, 30);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(84, 15);
             this.label3.TabIndex = 2;
@@ -84,7 +84,7 @@
             // 
             this.devName.AutoSize = true;
             this.devName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.devName.Location = new System.Drawing.Point(141, 67);
+            this.devName.Location = new System.Drawing.Point(141, 45);
             this.devName.Name = "devName";
             this.devName.Size = new System.Drawing.Size(34, 15);
             this.devName.TabIndex = 5;
@@ -94,7 +94,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(12, 67);
+            this.label5.Location = new System.Drawing.Point(13, 45);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(76, 15);
             this.label5.TabIndex = 4;
@@ -104,7 +104,7 @@
             // 
             this.serverID.AutoSize = true;
             this.serverID.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.serverID.Location = new System.Drawing.Point(141, 94);
+            this.serverID.Location = new System.Drawing.Point(141, 60);
             this.serverID.Name = "serverID";
             this.serverID.Size = new System.Drawing.Size(38, 15);
             this.serverID.TabIndex = 7;
@@ -114,7 +114,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(12, 94);
+            this.label4.Location = new System.Drawing.Point(13, 60);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(111, 15);
             this.label4.TabIndex = 6;
@@ -124,7 +124,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(12, 119);
+            this.label6.Location = new System.Drawing.Point(13, 75);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(107, 15);
             this.label6.TabIndex = 8;
@@ -134,7 +134,7 @@
             // 
             this.clientID.AutoSize = true;
             this.clientID.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.clientID.Location = new System.Drawing.Point(141, 119);
+            this.clientID.Location = new System.Drawing.Point(141, 75);
             this.clientID.Name = "clientID";
             this.clientID.Size = new System.Drawing.Size(34, 15);
             this.clientID.TabIndex = 9;
@@ -156,7 +156,7 @@
             this.Controls.Add(this.pluginName);
             this.Controls.Add(this.label1);
             this.Name = "pluginDisplay";
-            this.Size = new System.Drawing.Size(443, 148);
+            this.Size = new System.Drawing.Size(443, 99);
             this.Load += new System.EventHandler(this.pluginDisplay_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

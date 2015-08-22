@@ -2,12 +2,13 @@
 using MLSurveillanceClient.Forms;
 using MLSurveillanceSharedCode.Network;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace MLSurveillanceClient.Handlers
 {
     public static class RemoteChatHandler
     {
-        public static IClientConnection NetworkHost { get; private set; }
+        private static IClientConnection NetworkHost;
         private static RemoteChatForm chatForm = null;
         public static void SetNetworkHost(IClientConnection network)
         {
@@ -50,7 +51,6 @@ namespace MLSurveillanceClient.Handlers
                 new Thread(() =>
                 {
                     chatForm = new RemoteChatForm(NetworkHost);
-                    chatForm.FormClosed += ChatForm_FormClosed;
                     chatForm.ShowDialog();
                 }).Start();
             }
@@ -60,16 +60,13 @@ namespace MLSurveillanceClient.Handlers
         {
             if (chatForm != null)
             {
-                chatForm.Close();
-                chatForm.Dispose();
-                chatForm = null;
+                chatForm.Invoke((MethodInvoker)delegate ()
+                {
+                    chatForm.Close();
+                    chatForm.Dispose();
+                    chatForm = null;
+                });
             }
-        }
-
-        private static void ChatForm_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
-        {
-            chatForm.Dispose();
-            chatForm = null;
         }
     }
 }

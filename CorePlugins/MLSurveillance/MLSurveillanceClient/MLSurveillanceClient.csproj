@@ -57,6 +57,7 @@
       <DependentUpon>RemoteChatForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Handlers\RemoteChatHandler.cs" />
+    <Compile Include="Handlers\RemoteDesktopHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

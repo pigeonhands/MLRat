@@ -2,7 +2,8 @@
 {
     public enum NetworkCommand : byte
     {
-        RemoteChat
+        RemoteChat,
+        RemoteDesktop
     }
 
     public enum RemoteChatCommand : byte
@@ -10,5 +11,12 @@
         Start,
         Stop,
         Message
+    }
+
+    public enum RemoteDesktopCommand : byte
+    {
+        SetQuality,
+        RequestFrame,
+        Frame
     }
 }

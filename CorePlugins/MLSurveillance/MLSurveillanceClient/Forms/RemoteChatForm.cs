@@ -52,7 +52,10 @@ namespace MLSurveillanceClient.Forms
                 AddMessage("Admin: {0}", message);
             });
         }
-
+        public void Destroy()
+        {
+            Dispose();
+        }
         private void RemoteChatForm_Load(object sender, EventArgs e)
         {
 

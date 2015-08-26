@@ -58,7 +58,7 @@ namespace MLRatClient
                     MLClientPlugin _plugin = plugin.Value;
                     try
                     {
-                        _plugin.ClientPlugin.OnConnect(new MLConnection(_plugin.ClientPluginID, OnSend));
+                        _plugin.ClientPlugin.OnConnect();
                     }
                     catch (Exception ex)
                     {
@@ -117,7 +117,7 @@ namespace MLRatClient
                     throw new Exception("Client plugin ID match");
                 LoadedPlugins.Add(_plugin.ClientPluginID, _plugin);
                 Console.WriteLine("Loaded plugin: {0}", _plugin.ClientPluginID.ToString("n"));
-                _plugin.ClientPlugin.OnPluginLoad();
+                _plugin.ClientPlugin.OnPluginLoad(new MLConnection(_plugin.ClientPluginID, OnSend));
 
             }
             catch(Exception ex)

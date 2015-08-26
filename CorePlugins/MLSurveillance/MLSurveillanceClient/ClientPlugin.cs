@@ -10,10 +10,9 @@ namespace MLSurveillanceClient
 {
     class ClientPlugin : IClientPlugin
     {
-        public void OnConnect(IClientConnection server)
+        public void OnConnect()
         {
-            RemoteChatHandler.SetNetworkHost(server);
-            RemoteDesktopHandler.SetNetworkHost(server);
+            
         }
 
         public void OnDataRecieved(object[] data)
@@ -30,9 +29,10 @@ namespace MLSurveillanceClient
             RemoteChatHandler.Disconnect();
         }
 
-        public void OnPluginLoad()
+        public void OnPluginLoad(IClientConnection server)
         {
-            
+            RemoteChatHandler.SetNetworkHost(server);
+            RemoteDesktopHandler.SetNetworkHost(server);
         }
     }
 }

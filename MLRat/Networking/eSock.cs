@@ -391,8 +391,9 @@ namespace MLRat.Networking
                         return (t)bf.Deserialize(ms);
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
+                    Console.WriteLine("[eSock] {0}", ex);
                     return default(t);
                 }
             }

@@ -3,8 +3,8 @@
     public interface IClientPlugin
     {
         void OnDataRecieved(object[] data);
-        void OnConnect(IClientConnection server);
+        void OnConnect();
         void OnDisconnect();
-        void OnPluginLoad();
+        void OnPluginLoad(IClientConnection server);
     }
 }

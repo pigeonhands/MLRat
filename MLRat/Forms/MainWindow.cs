@@ -237,6 +237,15 @@ namespace MLRat.Forms
                             Debug.WriteLine(string.Format("Updated {0}", settingName), "Settings");
                         }
 
+                        if(command == NetworkPacket.UpdateSettingsDictionary)
+                        {
+                            var settings = (Dictionary< string, object>)data[2];
+                            foreach(var dcItem in settings)
+                            {
+                                _ClientData.Settings.UpdateSetting(dcItem.Key, dcItem.Value);
+                            }
+                        }
+
 
                         #region " Plugin Checksum "
                         

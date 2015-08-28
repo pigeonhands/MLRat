@@ -344,9 +344,12 @@ namespace MLRat.Networking
 
             public void SendWait(params object[] data)
             {
-                byte[] serilizedData = Formatter.Serialize(data);
-                _globalSocket.Send(serilizedData);
-                Thread.Sleep(10);
+                lock(this)
+                {
+                    byte[] serilizedData = Formatter.Serialize(data);
+                    _globalSocket.Send(serilizedData);
+                    Thread.Sleep(10);
+                }
             }
 
             private void EndSend(IAsyncResult AR)

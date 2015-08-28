@@ -10,6 +10,7 @@
         Checksums,
         PluginsVerified,
         UpdateSetting,
+        UpdateSettingsDictionary,
         BasicSettingsUpdated
     }
 }

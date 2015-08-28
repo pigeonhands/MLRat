@@ -43,6 +43,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.pluginPanel = new System.Windows.Forms.Panel();
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -56,14 +58,16 @@
             this.clientList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
-            this.columnHeader3});
+            this.columnHeader3,
+            this.columnHeader4,
+            this.columnHeader5});
             this.clientList.ContextMenuStrip = this.ClientContextStrip;
             this.clientList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.clientList.FullRowSelect = true;
             this.clientList.GridLines = true;
             this.clientList.Location = new System.Drawing.Point(3, 3);
             this.clientList.Name = "clientList";
-            this.clientList.Size = new System.Drawing.Size(712, 330);
+            this.clientList.Size = new System.Drawing.Size(681, 215);
             this.clientList.TabIndex = 0;
             this.clientList.UseCompatibleStateImageBehavior = false;
             this.clientList.View = System.Windows.Forms.View.Details;
@@ -99,7 +103,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(550, 306);
+            this.tabControl1.Size = new System.Drawing.Size(695, 247);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -108,7 +112,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(718, 336);
+            this.tabPage1.Size = new System.Drawing.Size(687, 221);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Main";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -118,7 +122,7 @@
             this.tabPage3.Controls.Add(this.groupBox1);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(718, 336);
+            this.tabPage3.Size = new System.Drawing.Size(542, 280);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Settings";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -195,11 +199,21 @@
             this.pluginPanel.Size = new System.Drawing.Size(536, 274);
             this.pluginPanel.TabIndex = 0;
             // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "Cores";
+            this.columnHeader4.Width = 81;
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "Executable Path";
+            this.columnHeader5.Width = 156;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(550, 308);
+            this.ClientSize = new System.Drawing.Size(695, 249);
             this.Controls.Add(this.tabControl1);
             this.Name = "MainWindow";
             this.Text = "MainWindow";
@@ -231,5 +245,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
     }
 }

@@ -53,14 +53,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cryptography\Hash.cs" />
+    <Compile Include="..\MLRatSharedCode\Cryptography\Hash.cs">
+      <Link>Cryptography\Hash.cs</Link>
+    </Compile>
+    <Compile Include="..\MLRatSharedCode\Networking\eSock.cs">
+      <Link>Networking\eSock.cs</Link>
+    </Compile>
+    <Compile Include="..\MLRatSharedCode\Networking\NetworkHeaders.cs">
+      <Link>Networking\NetworkHeaders.cs</Link>
+    </Compile>
     <Compile Include="Forms\MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Networking\eSock.cs" />
+    <Compile Include="Handlers\ClientSettings.cs" />
     <Compile Include="Networking\MLClient.cs" />
     <Compile Include="Networking\MLClientData.cs" />
     <Compile Include="Plugin\MLContextData.cs" />

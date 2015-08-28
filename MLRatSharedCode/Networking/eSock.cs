@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MLRat.Networking
 {
@@ -12,6 +11,7 @@ namespace MLRat.Networking
     using System.Net;
     using System.Net.Sockets;
     using System.Runtime.Serialization.Formatters.Binary;
+    using System.Threading;
 
     /// <summary>
     /// eSock 2.0 by BahNahNah
@@ -168,7 +168,7 @@ namespace MLRat.Networking
 
             #endregion
 
-            public class eSockClient
+            public class eSockClient : IDisposable
             {
                 public byte[] Buffer { get; set; }
                 public object Tag { get; set; }
@@ -203,6 +203,15 @@ namespace MLRat.Networking
                     NetworkSocket.EndSend(AR, out SE);
                 }
 
+                public void Dispose()
+                {
+                    if(NetworkSocket.Connected)
+                    {
+                        NetworkSocket.Shutdown(SocketShutdown.Both);
+                        NetworkSocket.Disconnect(true);
+                    }
+                    NetworkSocket.Close(1000);
+                }
             }
         }
 
@@ -331,6 +340,13 @@ namespace MLRat.Networking
             {
                 byte[] serilizedData = Formatter.Serialize(data);
                 _globalSocket.BeginSend(serilizedData, 0, serilizedData.Length, SocketFlags.None, EndSend, null);
+            }
+
+            public void SendWait(params object[] data)
+            {
+                byte[] serilizedData = Formatter.Serialize(data);
+                _globalSocket.Send(serilizedData);
+                Thread.Sleep(10);
             }
 
             private void EndSend(IAsyncResult AR)

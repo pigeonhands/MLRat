@@ -1,5 +1,5 @@
 ﻿using MLRat.Client;
-using MLRatClient.Cryptography;
+using MLRat.Cryptography;
 using System;
 using System.Reflection;
 namespace MLRatClient.Plugin

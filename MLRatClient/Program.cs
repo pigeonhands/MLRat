@@ -37,7 +37,6 @@ namespace MLRatClient
             Connect();
             Application.Run();
         }
-
         static void Connect()
         {
             Console.WriteLine("Connecting...");
@@ -47,7 +46,6 @@ namespace MLRatClient
             networkClient.OnDisconnect += networkClient_OnDisconnect;
             networkClient.OnConnect += NetworkClient_OnConnect;
             networkClient.ConnectAsync("127.0.0.1", 12345);
-            
         }
 
         private static void NetworkClient_OnConnect(eSock.Client sender, bool success)

@@ -16,6 +16,7 @@ using MLRat.Server;
 using System.Threading;
 using MLRat.Handlers;
 using ServerPlugin.InterfaceHandle;
+using System.Runtime.InteropServices;
 
 namespace MLRat.Forms
 {
@@ -466,5 +467,17 @@ namespace MLRat.Forms
 
         #endregion
 
+
+        #region " WinApi "
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr BeginUpdateResource(string pFileName,
+       [MarshalAs(UnmanagedType.Bool)]bool bDeleteExistingResources);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool UpdateResource(IntPtr hUpdate, string lpType, string lpName, ushort wLanguage, IntPtr lpData, uint cbData);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool EndUpdateResource(IntPtr hUpdate, bool fDiscard);
+
+        #endregion
     }
 }

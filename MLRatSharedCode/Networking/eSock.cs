@@ -17,7 +17,7 @@ namespace MLRat.Networking
     public static class eSock
     {
 
-        
+
         #region " eSock Server "
 
         public class Server
@@ -60,12 +60,14 @@ namespace MLRat.Networking
                 }
             }
             public bool IsRunning { get; private set; }
+            public eSockServerEncryptionSettings Encryption { get; private set; }
 
             #region " Constructors "
 
             public Server()
             {
                 _globalSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                Encryption = new eSockServerEncryptionSettings();
                 IsRunning = false;
             }
             public Server(AddressFamily SocketaddressFamily)
@@ -122,6 +124,24 @@ namespace MLRat.Networking
             }
             #endregion
 
+            #region " Encryption "
+
+            public class eSockServerEncryptionSettings
+            {
+                public eSockServerEncryptionSettings()
+                {
+                    DefaultClientEncryption = new eSockRijndael();
+                    DefaultEncryptionKey = string.Empty;
+                    EnableEncryptionOnConnect = false;
+                }
+
+                public IeSockEncryption DefaultClientEncryption { get; set; }
+                public string DefaultEncryptionKey { get; set; }
+                public bool EnableEncryptionOnConnect { get; set; }
+            }
+
+            #endregion
+
             #region " Callbacks "
 
             private void AcceptCallback(IAsyncResult AR)
@@ -134,7 +154,10 @@ namespace MLRat.Networking
                     if (!OnClientConnecting(this, cSock))
                         return;
                 }
-                eSockClient _client = new eSockClient(cSock, BufferSize);
+                eSockClient _client = new eSockClient(cSock, BufferSize, Encryption.DefaultClientEncryption);
+                _client.Encryption.Key = Encryption.DefaultEncryptionKey;
+                _client.Encryption.Enabled = Encryption.EnableEncryptionOnConnect;
+
                 if (OnClientConnect != null)
                     OnClientConnect(this, _client);
                 _client.NetworkSocket.BeginReceive(_client.Buffer, 0, _client.Buffer.Length, SocketFlags.None,
@@ -190,6 +213,13 @@ namespace MLRat.Networking
                     Buffer = new byte[bufferSize];
                 }
 
+                public eSockClient(Socket cSock, int bufferSize, IeSockEncryption _method)
+                {
+                    Encryption = new eSockEncryptionSettings(_method);
+                    NetworkSocket = cSock;
+                    Buffer = new byte[bufferSize];
+                }
+
                 public void Send(params object[] args)
                 {
                     try
@@ -201,7 +231,7 @@ namespace MLRat.Networking
                     }
                     catch
                     {
-                        
+                        //Not connected
                     }
                 }
                 private void EndSend(IAsyncResult AR)
@@ -212,7 +242,7 @@ namespace MLRat.Networking
 
                 public void Dispose()
                 {
-                    if(NetworkSocket.Connected)
+                    if (NetworkSocket.Connected)
                     {
                         NetworkSocket.Shutdown(SocketShutdown.Both);
                         NetworkSocket.Disconnect(true);
@@ -355,10 +385,10 @@ namespace MLRat.Networking
 
             public void SendWait(params object[] data)
             {
-                lock(this)
+                lock (this)
                 {
                     byte[] serilizedData = Formatter.Serialize(data);
-                    if(Encryption != null)
+                    if (Encryption != null)
                         serilizedData = Encryption.Encrypt(serilizedData);
                     _globalSocket.Send(serilizedData);
                     Thread.Sleep(10);
@@ -427,7 +457,7 @@ namespace MLRat.Networking
                         return (t)bf.Deserialize(ms);
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine("[eSock] {0}", ex);
                     return default(t);
@@ -507,6 +537,12 @@ namespace MLRat.Networking
                 Key = string.Empty;
                 Method = new eSockRijndael();
             }
+            public eSockEncryptionSettings(IeSockEncryption _method)
+            {
+                Enabled = false;
+                Key = string.Empty;
+                Method = _method;
+            }
             public void GenerateRandomKey()
             {
                 Key = Guid.NewGuid().ToString("n");
@@ -547,7 +583,7 @@ namespace MLRat.Networking
                 }
                 catch
                 {
-                    
+
                 }
                 return input;
             }
@@ -589,4 +625,5 @@ namespace MLRat.Networking
         #endregion
 
     }
+
 }

@@ -33,6 +33,8 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ClientContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -43,8 +45,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.pluginPanel = new System.Windows.Forms.Panel();
-            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -87,6 +87,16 @@
             this.columnHeader3.Text = "OS";
             this.columnHeader3.Width = 107;
             // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "Cores";
+            this.columnHeader4.Width = 81;
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "Executable Path";
+            this.columnHeader5.Width = 156;
+            // 
             // ClientContextStrip
             // 
             this.ClientContextStrip.Name = "ClientContextStrip";
@@ -122,7 +132,7 @@
             this.tabPage3.Controls.Add(this.groupBox1);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(542, 280);
+            this.tabPage3.Size = new System.Drawing.Size(687, 221);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Settings";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -186,28 +196,19 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(542, 280);
+            this.tabPage2.Size = new System.Drawing.Size(687, 221);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Plugins";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // pluginPanel
             // 
+            this.pluginPanel.AutoScroll = true;
             this.pluginPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pluginPanel.Location = new System.Drawing.Point(3, 3);
             this.pluginPanel.Name = "pluginPanel";
-            this.pluginPanel.Size = new System.Drawing.Size(536, 274);
+            this.pluginPanel.Size = new System.Drawing.Size(681, 215);
             this.pluginPanel.TabIndex = 0;
-            // 
-            // columnHeader4
-            // 
-            this.columnHeader4.Text = "Cores";
-            this.columnHeader4.Width = 81;
-            // 
-            // columnHeader5
-            // 
-            this.columnHeader5.Text = "Executable Path";
-            this.columnHeader5.Width = 156;
             // 
             // MainWindow
             // 

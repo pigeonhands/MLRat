@@ -1,16 +1,15 @@
 ﻿using System.Security.Cryptography;
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Net;
+using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Threading;
 
 namespace MLRat.Networking
 {
-    using System;
-    using System.IO;
-    using System.IO.Compression;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Runtime.Serialization.Formatters.Binary;
-    using System.Text;
-    using System.Threading;
-
     /// <summary>
     /// eSock 2.0 by BahNahNah
     /// uid=2388291
@@ -202,7 +201,7 @@ namespace MLRat.Networking
                     }
                     catch
                     {
-                        //Not connected
+                        
                     }
                 }
                 private void EndSend(IAsyncResult AR)
@@ -486,9 +485,22 @@ namespace MLRat.Networking
 
         public class eSockEncryptionSettings
         {
+            /// <summary>
+            /// Uses seprate keys for encryption and decryption
+            /// set EncryptionKey and DecryptionKey
+            /// </summary>
+            public bool UseSeprateEncryptionDecryptionKeys { get; set; }
             public IeSockEncryption Method { get; set; }
             public bool Enabled { get; set; }
             public string Key { get; set; }
+            /// <summary>
+            /// Used when UseSeprateEncryptionDecryptionKeys is true
+            /// </summary>
+            public string EncryptionKey { get; set; }
+            /// <summary>
+            /// Used when UseSeprateEncryptionDecryptionKeys is true
+            /// </summary>
+            public string DecryptionKey { get; set; }
             public eSockEncryptionSettings()
             {
                 Enabled = false;
@@ -507,7 +519,10 @@ namespace MLRat.Networking
                     {
                         if (Method == null)
                             throw new Exception("No method");
-                        return Method.Encrypt(input, Key);
+                        if (UseSeprateEncryptionDecryptionKeys)
+                            return Method.Encrypt(input, EncryptionKey);
+                        else
+                            return Method.Encrypt(input, Key);
                     }
                 }
                 catch
@@ -524,7 +539,10 @@ namespace MLRat.Networking
                     {
                         if (Method == null)
                             throw new Exception("No method");
-                        return Method.Decrypt(input, Key);
+                        if (UseSeprateEncryptionDecryptionKeys)
+                            return Method.Decrypt(input, DecryptionKey);
+                        else
+                            return Method.Decrypt(input, Key);
                     }
                 }
                 catch

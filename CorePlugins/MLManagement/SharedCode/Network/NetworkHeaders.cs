@@ -2,7 +2,9 @@
 {
     public enum NetworkCommand : byte
     {
-        TaskManager
+        TaskManager,
+        Ping,
+        Pong
     }
 
     public enum TaskManagerCommand : byte

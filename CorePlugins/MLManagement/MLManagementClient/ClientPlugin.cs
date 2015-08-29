@@ -10,6 +10,7 @@ namespace MLManagementClient
 {
     public class ClientPlugin : IClientPlugin
     {
+        IClientConnection NetworkHost = null;
         public void OnConnect()
         {
             
@@ -20,7 +21,7 @@ namespace MLManagementClient
             NetworkCommand command = (NetworkCommand)data[0];
 
             if (command == NetworkCommand.TaskManager) TaskManagerHandler.Handle(data);
-
+            if (command == NetworkCommand.Ping) NetworkHost.Send((byte)NetworkCommand.Pong);
 
         }
 
@@ -31,6 +32,7 @@ namespace MLManagementClient
 
         public void OnPluginLoad(IClientConnection server)
         {
+            NetworkHost = server;
             TaskManagerHandler.SetNetworkHost(server);
         }
     }

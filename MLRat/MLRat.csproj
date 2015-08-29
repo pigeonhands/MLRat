@@ -73,6 +73,7 @@
     <Compile Include="Networking\MLClientData.cs" />
     <Compile Include="Plugin\MLContextData.cs" />
     <Compile Include="Plugin\MLPlugin.cs" />
+    <Compile Include="Plugin\MLRatColumnData.cs" />
     <Compile Include="Plugin\MLUiHost.cs" />
     <Compile Include="Plugin\pluginDisplay.cs">
       <SubType>UserControl</SubType>

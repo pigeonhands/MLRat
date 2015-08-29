@@ -43,6 +43,7 @@
     <Compile Include="IClient.cs" />
     <Compile Include="InterfaceHandle\IServerUIHandler.cs" />
     <Compile Include="InterfaceHandle\MLPluginInfomation.cs" />
+    <Compile Include="InterfaceHandle\MLRatColumn.cs" />
     <Compile Include="InterfaceHandle\MLRatContextEntry.cs" />
     <Compile Include="IServerPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

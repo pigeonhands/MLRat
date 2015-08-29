@@ -54,6 +54,7 @@
     <Compile Include="Forms\TaskManagerForm.Designer.cs">
       <DependentUpon>TaskManagerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Handlers\PingHandler.cs" />
     <Compile Include="Handlers\TaskManagerHandler.cs" />
     <Compile Include="ServerPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

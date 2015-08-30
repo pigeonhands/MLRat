@@ -32,7 +32,7 @@ namespace MLRat.Networking
 
             #endregion
 
-            #region " Callbacks "
+            #region " Events "
 
             public event OnClientConnectCallback OnClientConnect;
             public event OnClientDisconnectCallback OnClientDisconnect;
@@ -40,6 +40,8 @@ namespace MLRat.Networking
             public event OnDataRetrievedCallback OnDataRetrieved;
 
             #endregion
+
+            #region " Variables and Properties "
 
             private Socket _globalSocket;
             private int _BufferSize = 1000000;
@@ -61,6 +63,8 @@ namespace MLRat.Networking
             }
             public bool IsRunning { get; private set; }
             public eSockServerEncryptionSettings Encryption { get; private set; }
+
+            #endregion
 
             #region " Constructors "
 
@@ -178,18 +182,59 @@ namespace MLRat.Networking
                         OnClientDisconnect(this, _client, SE);
                     return;
                 }
-                byte[] Packet = new byte[packetLength];
-                Buffer.BlockCopy(_client.Buffer, 0, Packet, 0, packetLength);
-                _client.NetworkSocket.BeginReceive(_client.Buffer, 0, _client.Buffer.Length, SocketFlags.None,
-                    RetrieveCallback, _client);
+                byte[] PacketCluster = new byte[packetLength];
+                Buffer.BlockCopy(_client.Buffer, 0, PacketCluster, 0, packetLength);
 
-                if (_client.Encryption != null)
-                    Packet = _client.Encryption.Decrypt(Packet);
+                byte[] Packet = null;
+                using (MemoryStream bufferStream = new MemoryStream(PacketCluster))
+                using (BinaryReader packetReader = new BinaryReader(bufferStream))
+                {
+                    try
+                    {
+                        while (bufferStream.Position < bufferStream.Length)
+                        {
+                            int length = packetReader.ReadInt32();
 
-                object[] RetrievedData = Formatter.Deserialize<object[]>(Packet);
-                if (OnDataRetrieved != null && RetrievedData != null)
-                    OnDataRetrieved(this, _client, RetrievedData);
+                            if (length > bufferStream.Length - bufferStream.Position)
+                            {
+                                using (MemoryStream recievePacketChunks = new MemoryStream(length))
+                                {
+                                    byte[] buffer = new byte[bufferStream.Length - bufferStream.Position];
 
+                                    buffer = packetReader.ReadBytes(buffer.Length);
+                                    recievePacketChunks.Write(buffer, 0, buffer.Length);
+
+                                    while (recievePacketChunks.Position != length)
+                                    {
+                                        packetLength = _client.NetworkSocket.Receive(_client.Buffer);
+                                        buffer = new byte[packetLength];
+                                        Buffer.BlockCopy(_client.Buffer, 0, buffer, 0, packetLength);
+                                        recievePacketChunks.Write(buffer, 0, buffer.Length);
+                                    }
+                                    Packet = recievePacketChunks.ToArray();
+                                }
+                            }
+                            else
+                            {
+                                Packet = packetReader.ReadBytes(length);
+                            }
+
+
+                            if (_client.Encryption != null)
+                                Packet = _client.Encryption.Decrypt(Packet);
+
+                            object[] RetrievedData = Formatter.Deserialize<object[]>(Packet);
+                            if (OnDataRetrieved != null && RetrievedData != null)
+                                OnDataRetrieved(this, _client, RetrievedData);
+
+                            _client.NetworkSocket.BeginReceive(_client.Buffer, 0, _client.Buffer.Length, SocketFlags.None, RetrieveCallback, _client);
+                        }
+                    }
+                    catch
+                    {
+
+                    }
+                }
             }
 
             #endregion
@@ -227,7 +272,18 @@ namespace MLRat.Networking
                         byte[] serilisedData = Formatter.Serialize(args);
                         if (Encryption != null)
                             serilisedData = Encryption.Encrypt(serilisedData);
-                        NetworkSocket.BeginSend(serilisedData, 0, serilisedData.Length, SocketFlags.None, EndSend, null);
+
+                        byte[] Packet = null;
+
+                        using (MemoryStream packetStream = new MemoryStream())
+                        using (BinaryWriter packetWriter = new BinaryWriter(packetStream))
+                        {
+                            packetWriter.Write(serilisedData.Length);
+                            packetWriter.Write(serilisedData);
+                            Packet = packetStream.ToArray();
+                        }
+
+                        NetworkSocket.BeginSend(Packet, 0, Packet.Length, SocketFlags.None, EndSend, null);
                     }
                     catch
                     {
@@ -266,13 +322,15 @@ namespace MLRat.Networking
 
             #endregion
 
-            #region " Callbacks "
+            #region " Events "
 
             public event OnConnectAsyncCallback OnConnect;
             public event OnDisconnectCallback OnDisconnect;
             public event OnDataRetrievedCallback OnDataRetrieved;
 
             #endregion
+
+            #region " Variables and Properties "
 
             private Socket _globalSocket;
             private int _BufferSize = 1000000;
@@ -291,6 +349,8 @@ namespace MLRat.Networking
                     _BufferSize = value;
                 }
             }
+
+            #endregion
 
             #region " Constructor "
 
@@ -380,7 +440,18 @@ namespace MLRat.Networking
                 byte[] serilizedData = Formatter.Serialize(data);
                 if (Encryption != null)
                     serilizedData = Encryption.Encrypt(serilizedData);
-                _globalSocket.BeginSend(serilizedData, 0, serilizedData.Length, SocketFlags.None, EndSend, null);
+
+                byte[] Packet = null;
+
+                using (MemoryStream packetStream = new MemoryStream())
+                using (BinaryWriter packetWriter = new BinaryWriter(packetStream))
+                {
+                    packetWriter.Write(serilizedData.Length);
+                    packetWriter.Write(serilizedData);
+                    Packet = packetStream.ToArray();
+                }
+
+                _globalSocket.BeginSend(Packet, 0, Packet.Length, SocketFlags.None, EndSend, null);
             }
 
             public void SendWait(params object[] data)
@@ -390,7 +461,17 @@ namespace MLRat.Networking
                     byte[] serilizedData = Formatter.Serialize(data);
                     if (Encryption != null)
                         serilizedData = Encryption.Encrypt(serilizedData);
-                    _globalSocket.Send(serilizedData);
+                    byte[] Packet = null;
+
+                    using (MemoryStream packetStream = new MemoryStream())
+                    using (BinaryWriter packetWriter = new BinaryWriter(packetStream))
+                    {
+                        packetWriter.Write(serilizedData.Length);
+                        packetWriter.Write(serilizedData);
+                        Packet = packetStream.ToArray();
+                    }
+
+                    _globalSocket.Send(Packet);
                     Thread.Sleep(10);
                 }
             }
@@ -415,16 +496,57 @@ namespace MLRat.Networking
                         OnDisconnect(this, SE);
                     return;
                 }
-                byte[] Packet = new byte[packetLength];
-                Buffer.BlockCopy(PacketBuffer, 0, Packet, 0, packetLength);
-                _globalSocket.BeginReceive(PacketBuffer, 0, PacketBuffer.Length, SocketFlags.None, EndRetrieve, null);
+                byte[] PacketCluster = new byte[packetLength];
+                Buffer.BlockCopy(PacketBuffer, 0, PacketCluster, 0, packetLength);
 
-                if (Encryption != null)
-                    Packet = Encryption.Decrypt(Packet);
 
-                object[] data = Formatter.Deserialize<object[]>(Packet);
-                if (OnDataRetrieved != null && data != null)
-                    OnDataRetrieved(this, data);
+                using (MemoryStream bufferStream = new MemoryStream(PacketCluster))
+                using (BinaryReader packetReader = new BinaryReader(bufferStream))
+                {
+                    try
+                    {
+                        while (bufferStream.Position < bufferStream.Length)
+                        {
+                            int length = packetReader.ReadInt32();
+                            byte[] Packet = null;
+                            if (length > bufferStream.Length - bufferStream.Position)
+                            {
+                                using (MemoryStream recievePacketChunks = new MemoryStream(length))
+                                {
+                                    byte[] buffer = new byte[bufferStream.Length - bufferStream.Position];
+
+                                    buffer = packetReader.ReadBytes(buffer.Length);
+                                    recievePacketChunks.Write(buffer, 0, buffer.Length);
+
+                                    while (recievePacketChunks.Position != length)
+                                    {
+                                        packetLength = _globalSocket.Receive(PacketBuffer);
+                                        buffer = new byte[packetLength];
+                                        Buffer.BlockCopy(PacketBuffer, 0, buffer, 0, packetLength);
+                                        recievePacketChunks.Write(buffer, 0, buffer.Length);
+                                    }
+                                    Packet = recievePacketChunks.ToArray();
+                                }
+                            }
+                            else
+                            {
+                                Packet = packetReader.ReadBytes(length);
+                            }
+
+                            if (Encryption != null)
+                                Packet = Encryption.Decrypt(Packet);
+
+                            object[] data = Formatter.Deserialize<object[]>(Packet);
+                            if (OnDataRetrieved != null && data != null)
+                                OnDataRetrieved(this, data);
+
+                            _globalSocket.BeginReceive(PacketBuffer, 0, PacketBuffer.Length, SocketFlags.None, EndRetrieve, null);
+                        }
+                    }
+                    catch { }
+                }
+
+
             }
 
             #endregion

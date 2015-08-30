@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MLSurveillanceServer.Handlers
@@ -44,6 +45,9 @@ namespace MLSurveillanceServer.Handlers
         public static void Handle(IClient client, object[] data)
         {
             var command = (RemoteDesktopCommand)data[1];
+
+            Console.WriteLine("Remote desktop command: {0}", command.ToString());
+
             if (command == RemoteDesktopCommand.Frame)
             {
                 if (formHandler.ContainsKey(client.ID) && formHandler[client.ID] != null)
@@ -51,6 +55,19 @@ namespace MLSurveillanceServer.Handlers
                     using (var ms = new MemoryStream((byte[])data[2]))
                         formHandler[client.ID].SetImage(Image.FromStream(ms));
                 }
+            }
+            if(command == RemoteDesktopCommand.noChangeFrame)
+            {
+                new Task(() =>
+                {
+                    if (formHandler.ContainsKey(client.ID) && formHandler[client.ID] != null)
+                    {
+                        Task.Delay(1000);
+                        formHandler[client.ID].SendFrameRequest();
+                    }
+                });
+
+                
             }
 
             if(command == RemoteDesktopCommand.MonitorResponce)

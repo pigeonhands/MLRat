@@ -31,10 +31,8 @@
             this.pbScreen = new System.Windows.Forms.PictureBox();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
-            this.nudDelay = new System.Windows.Forms.NumericUpDown();
             this.cbMonitors = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbScreen)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudDelay)).BeginInit();
             this.SuspendLayout();
             // 
             // pbScreen
@@ -72,30 +70,6 @@
             this.btnStop.UseVisualStyleBackColor = true;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
-            // nudDelay
-            // 
-            this.nudDelay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.nudDelay.Location = new System.Drawing.Point(366, 238);
-            this.nudDelay.Maximum = new decimal(new int[] {
-            3000,
-            0,
-            0,
-            0});
-            this.nudDelay.Minimum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.nudDelay.Name = "nudDelay";
-            this.nudDelay.Size = new System.Drawing.Size(91, 20);
-            this.nudDelay.TabIndex = 3;
-            this.nudDelay.Value = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            this.nudDelay.ValueChanged += new System.EventHandler(this.nudDelay_ValueChanged);
-            // 
             // cbMonitors
             // 
             this.cbMonitors.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -114,7 +88,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(491, 261);
             this.Controls.Add(this.cbMonitors);
-            this.Controls.Add(this.nudDelay);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnStart);
             this.Controls.Add(this.pbScreen);
@@ -122,7 +95,6 @@
             this.Text = "RemoteDesktopForm";
             this.Load += new System.EventHandler(this.RemoteDesktopForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbScreen)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudDelay)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -132,7 +104,6 @@
         private System.Windows.Forms.PictureBox pbScreen;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnStop;
-        private System.Windows.Forms.NumericUpDown nudDelay;
         private System.Windows.Forms.ComboBox cbMonitors;
     }
 }

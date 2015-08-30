@@ -16,7 +16,6 @@ namespace MLSurveillanceServer.Forms
     public partial class RemoteDesktopForm : Form
     {
         bool running = false;
-        int delay = 1000;
         int monitorNum = -1;
         public IClient Client { get; private set; }
         public RemoteDesktopForm(IClient _client)
@@ -52,6 +51,14 @@ namespace MLSurveillanceServer.Forms
             {
                 pbScreen.Image = img;
             });
+            SendFrameRequest();
+        }
+            
+
+        public void SendFrameRequest()
+        {
+            if (running)
+                Client.Send((byte)NetworkCommand.RemoteDesktop, (byte)RemoteDesktopCommand.RequestFrame, monitorNum);
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -64,38 +71,20 @@ namespace MLSurveillanceServer.Forms
             }
             if (running)
                 return;
+            running = true;
             btnStop.Enabled = true;
             btnStart.Enabled = false;
             cbMonitors.Enabled = false;
-            new Thread(RDThread).Start();
-        }
-
-        private void RDThread()
-        {
-            running = true;
-            while (running)
-            {
-                Client.Send((byte)NetworkCommand.RemoteDesktop, (byte)RemoteDesktopCommand.RequestFrame, monitorNum);
-                Thread.Sleep(delay);
-            }
-            Invoke((MethodInvoker)delegate ()
-            {
-                btnStart.Enabled = true;
-                btnStop.Enabled = false;
-                cbMonitors.Enabled = true;
-                btnStop.Text = "Stop";
-            });
-        }
-
-        private void nudDelay_ValueChanged(object sender, EventArgs e)
-        {
-            delay = (int)nudDelay.Value;
+            Client.Send((byte)NetworkCommand.RemoteDesktop, (byte)RemoteDesktopCommand.RequestFrame, monitorNum);
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
             running = false;
-            btnStop.Text = "Stopping...";
+            btnStop.Text = "Stop";
+            btnStop.Enabled = false;
+            btnStart.Enabled = true;
+            cbMonitors.Enabled = true;
         }
 
         private void cbMonitors_SelectedIndexChanged(object sender, EventArgs e)

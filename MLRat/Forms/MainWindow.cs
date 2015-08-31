@@ -226,7 +226,7 @@ namespace MLRat.Forms
         private void button1_Click(object sender, EventArgs e)
         {
             NetworkServer = new eSock.Server();
-            NetworkServer.BufferSize = 1000000;//1mb
+            NetworkServer.BufferSize = 8192;//1mb
             NetworkServer.OnClientConnect += NetworkServer_OnClientConnect;
             NetworkServer.OnClientConnecting += NetworkServer_OnClientConnecting;
             NetworkServer.OnClientDisconnect += NetworkServer_OnClientDisconnect;
@@ -455,6 +455,7 @@ namespace MLRat.Forms
                     DisplayException(plugin.Value, ex);
                 }
             }
+            client.Dispose();
         }
 
         bool NetworkServer_OnClientConnecting(eSock.Server sender, System.Net.Sockets.Socket cSock)

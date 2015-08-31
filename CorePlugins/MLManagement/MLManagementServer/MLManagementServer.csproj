@@ -48,6 +48,25 @@
     <Compile Include="..\SharedCode\Network\NetworkHeaders.cs">
       <Link>Network\NetworkHeaders.cs</Link>
     </Compile>
+    <Compile Include="CustomObjects\RegistryNodeData.cs" />
+    <Compile Include="Forms\addRegistryKeyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\addRegistryKeyForm.Designer.cs">
+      <DependentUpon>addRegistryKeyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\editRegistryKeyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\editRegistryKeyForm.Designer.cs">
+      <DependentUpon>editRegistryKeyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\RegistryEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RegistryEditorForm.Designer.cs">
+      <DependentUpon>RegistryEditorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\TaskManagerForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -55,6 +74,7 @@
       <DependentUpon>TaskManagerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Handlers\PingHandler.cs" />
+    <Compile Include="Handlers\RegistryEditorHandler.cs" />
     <Compile Include="Handlers\TaskManagerHandler.cs" />
     <Compile Include="ServerPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -66,6 +86,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\addRegistryKeyForm.resx">
+      <DependentUpon>addRegistryKeyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\editRegistryKeyForm.resx">
+      <DependentUpon>editRegistryKeyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RegistryEditorForm.resx">
+      <DependentUpon>RegistryEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\TaskManagerForm.resx">
       <DependentUpon>TaskManagerForm.cs</DependentUpon>
     </EmbeddedResource>

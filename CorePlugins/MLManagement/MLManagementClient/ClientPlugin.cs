@@ -20,9 +20,11 @@ namespace MLManagementClient
         {
             NetworkCommand command = (NetworkCommand)data[0];
 
+            Console.WriteLine("NetworkCommand: {0}", command.ToString());
+
             if (command == NetworkCommand.TaskManager) TaskManagerHandler.Handle(data);
             if (command == NetworkCommand.Ping) NetworkHost.Send((byte)NetworkCommand.Pong);
-
+            if (command == NetworkCommand.RegistryEdit) RegistryEditorHandler.Handle(data);
         }
 
         public void OnDisconnect()
@@ -33,7 +35,8 @@ namespace MLManagementClient
         public void OnPluginLoad(IClientConnection server)
         {
             NetworkHost = server;
-            TaskManagerHandler.SetNetworkHost(server);
+            TaskManagerHandler.SetNetworkHost(NetworkHost);
+            RegistryEditorHandler.SetNetworkHost(NetworkHost);
         }
     }
 }

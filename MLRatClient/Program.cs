@@ -41,12 +41,12 @@ namespace MLRatClient
         {
             Console.WriteLine("Connecting...");
             networkClient = new eSock.Client();
-            networkClient.BufferSize = 1000000;//1 mb
+            networkClient.BufferSize = 8192;
             networkClient.OnDataRetrieved += networkClient_OnDataRetrieved;
             networkClient.OnDisconnect += networkClient_OnDisconnect;
             networkClient.OnConnect += NetworkClient_OnConnect;
             networkClient.ConnectAsync("127.0.0.1", 12345);
-            
+           
         }
 
         private static void NetworkClient_OnConnect(eSock.Client sender, bool success)

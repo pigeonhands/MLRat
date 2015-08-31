@@ -7,12 +7,14 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MLManagementServer.Forms
 {
+    
     public partial class RegistryEditorForm : Form
     {
         public IClient Client { get; set; }
@@ -26,10 +28,7 @@ namespace MLManagementServer.Forms
 
         public void Destroy()
         {
-            Invoke((MethodInvoker)delegate ()
-            {
-                Dispose();
-            });
+            Dispose();
         }
 
         private void RegistryEditorForm_Load(object sender, EventArgs e)
@@ -338,6 +337,19 @@ namespace MLManagementServer.Forms
             if (node.Equals(CurrentConfig)) return RegistryKeyType.CurrentConfig;
             if (node.Equals(UsersRoot)) return RegistryKeyType.UserRoot;
             return RegistryKeyType.None;
+        }
+    }
+
+    public class NativeTreeView : TreeView
+    {
+        [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
+        private extern static int SetWindowTheme(IntPtr hWnd, string pszSubAppName,
+                                                string pszSubIdList);
+
+        protected override void CreateHandle()
+        {
+            base.CreateHandle();
+            SetWindowTheme(this.Handle, "explorer", null);
         }
     }
 }

@@ -180,6 +180,7 @@ namespace MLRat.Networking
                 {
                     if (OnClientDisconnect != null)
                         OnClientDisconnect(this, _client, SE);
+                    _client.Dispose();
                     return;
                 }
                 byte[] PacketCluster = new byte[packetLength];
@@ -298,12 +299,11 @@ namespace MLRat.Networking
 
                 public void Dispose()
                 {
-                    if (NetworkSocket.Connected)
+                    if (NetworkSocket != null && NetworkSocket.Connected)
                     {
                         NetworkSocket.Shutdown(SocketShutdown.Both);
                         NetworkSocket.Disconnect(true);
                     }
-                    NetworkSocket.Close(1000);
                 }
             }
         }

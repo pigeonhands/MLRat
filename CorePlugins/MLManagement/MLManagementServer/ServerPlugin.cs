@@ -33,6 +33,7 @@ namespace MLManagementServer
         public void OnClientDisconnect(IClient client)
         {
             PingHandler.Disconnect(client);
+            RegistryEditorHandler.Disconnect(client);
         }
 
         public void OnDataRetrieved(IClient client, object[] data)

@@ -455,7 +455,6 @@ namespace MLRat.Forms
                     DisplayException(plugin.Value, ex);
                 }
             }
-            client.Dispose();
         }
 
         bool NetworkServer_OnClientConnecting(eSock.Server sender, System.Net.Sockets.Socket cSock)

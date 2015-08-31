@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.tvRegistryNavigator = new System.Windows.Forms.TreeView();
+            this.tvRegistryNavigator = new NativeTreeView();
             this.navLabel = new System.Windows.Forms.Label();
             this.lvKeyDisplay = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));

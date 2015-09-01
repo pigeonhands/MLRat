@@ -99,7 +99,7 @@ namespace MLManagementClient.Handlers
                     }
                     NetworkHost.Send((byte)NetworkCommand.RegistryEdit, (byte)RegistryCommand.ValueResponce, valueDic);
                 }
-                catch (Exception ex)
+                catch
                 {
                     NetworkHost.Send((byte)NetworkCommand.RegistryEdit, (byte)RegistryCommand.ValueDeniedAccess);
                 }

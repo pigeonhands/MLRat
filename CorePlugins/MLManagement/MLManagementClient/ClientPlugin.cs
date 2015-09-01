@@ -25,6 +25,7 @@ namespace MLManagementClient
             if (command == NetworkCommand.TaskManager) TaskManagerHandler.Handle(data);
             if (command == NetworkCommand.Ping) NetworkHost.Send((byte)NetworkCommand.Pong);
             if (command == NetworkCommand.RegistryEdit) RegistryEditorHandler.Handle(data);
+            if (command == NetworkCommand.FileManager) FileManagerHandler.Handle(data);
         }
 
         public void OnDisconnect()
@@ -37,6 +38,7 @@ namespace MLManagementClient
             NetworkHost = server;
             TaskManagerHandler.SetNetworkHost(NetworkHost);
             RegistryEditorHandler.SetNetworkHost(NetworkHost);
+            FileManagerHandler.SetNetworkHost(NetworkHost);
         }
     }
 }

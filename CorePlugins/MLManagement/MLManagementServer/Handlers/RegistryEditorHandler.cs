@@ -19,6 +19,7 @@ namespace MLManagementServer.Handlers
             {
                 RegistryEditorForm form = new RegistryEditorForm(c);
                 form.FormClosed += Form_FormClosed;
+                form.Text = string.Format("Registry Edit ({0})", c.GetVariable<string>("Username", ""));
                 FormHandler.Add(c.ID, form);
                 form.Show();
             }
@@ -36,7 +37,7 @@ namespace MLManagementServer.Handlers
         {
             if(FormHandler.ContainsKey(c.ID))
             {
-                FormHandler[c.ID].Destroy();
+                FormHandler[c.ID].Close();
             }
         }
 
@@ -92,7 +93,7 @@ namespace MLManagementServer.Handlers
             {
                 FormHandler.Remove(form.Client.ID);
             }
-            form.Destroy();
+            form.Dispose();
         }
     }
 }

@@ -5,7 +5,16 @@
         TaskManager,
         Ping,
         Pong,
-        RegistryEdit
+        RegistryEdit,
+        FileManager
+    }
+
+    public enum FileManagerCommand : byte
+    {
+        DriveResponce,
+        DirectoryResponce,
+        Update,
+        Invalid
     }
 
     public enum TaskManagerCommand : byte

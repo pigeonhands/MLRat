@@ -1,4 +1,5 @@
-﻿using MLRat.Server;
+﻿using MLRat.Handlers;
+using MLRat.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,20 @@ namespace MLRat.Networking
         public void Send(params object[] data)
         {
             Client.Send(_pluginID, (object) data);
+        }
+
+        public T GetVariable<T>(string name, T defaultValue)
+        {
+            try
+            {
+                MLClientData data = (MLClientData)Client.Tag;
+                return data.Settings.GetSetting<T>(name, defaultValue);
+            }
+            catch
+            {
+                return defaultValue;
+            }
+            
         }
     }
 }

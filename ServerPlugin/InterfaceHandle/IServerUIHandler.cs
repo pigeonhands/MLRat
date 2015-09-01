@@ -1,4 +1,5 @@
 ﻿using ServerPlugin.InterfaceHandle;
+using System.Drawing;
 
 namespace MLRat.Server
 {
@@ -6,5 +7,6 @@ namespace MLRat.Server
     {
         void AddContext(MLRatContextEntry entry);
         IMLRatColumn AddColumn(string name, string defaultVaule);
+        Image GetImage(string name);
     }
 }

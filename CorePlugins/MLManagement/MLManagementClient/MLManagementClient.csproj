@@ -46,6 +46,7 @@
       <Link>Network\NetworkHeaders.cs</Link>
     </Compile>
     <Compile Include="ClientPlugin.cs" />
+    <Compile Include="Handlers\FileManagerHandler.cs" />
     <Compile Include="Handlers\RegistryEditorHandler.cs" />
     <Compile Include="Handlers\TaskManagerHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

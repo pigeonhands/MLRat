@@ -61,6 +61,12 @@
     <Compile Include="Forms\editRegistryKeyForm.Designer.cs">
       <DependentUpon>editRegistryKeyForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FileExplorerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FileExplorerForm.Designer.cs">
+      <DependentUpon>FileExplorerForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\RegistryEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -73,6 +79,7 @@
     <Compile Include="Forms\TaskManagerForm.Designer.cs">
       <DependentUpon>TaskManagerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Handlers\FileExplorerHandler.cs" />
     <Compile Include="Handlers\PingHandler.cs" />
     <Compile Include="Handlers\RegistryEditorHandler.cs" />
     <Compile Include="Handlers\TaskManagerHandler.cs" />
@@ -91,6 +98,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\editRegistryKeyForm.resx">
       <DependentUpon>editRegistryKeyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FileExplorerForm.resx">
+      <DependentUpon>FileExplorerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\RegistryEditorForm.resx">
       <DependentUpon>RegistryEditorForm.cs</DependentUpon>

@@ -73,7 +73,7 @@ namespace MLRat.Forms
                 pluginPanel.Controls.Add(_display);
                 LoadedPlugins.Add(_plugin.ClientPluginID, _plugin);
                 Console.WriteLine("Loaded plugin: {0}", _plugin.ClientPluginID.ToString("n"));
-                _plugin.ServerPlugin.OnPluginLoad(new MLUiHost(_plugin, OncontextAdd, OnColumnAdd));
+                _plugin.ServerPlugin.OnPluginLoad(new MLUiHost(_plugin, OncontextAdd, OnColumnAdd, getImage));
             }
             catch(Exception ex)
             {
@@ -136,9 +136,27 @@ namespace MLRat.Forms
             });
         }
 
+        Image getImage(string name)
+        {
+            try
+            {
+                string imgPath = Path.Combine("Images", name);
+                if (!File.Exists(imgPath))
+                    return null;
+                return Image.FromFile(imgPath);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         void OncontextAdd(MLPlugin _plugin, MLRatContextEntry entry)
         {
             ToolStripMenuItem _baseItem = new ToolStripMenuItem();
+            Image toolstripIcon = getImage(entry.Icon);
+            if (toolstripIcon != null)
+                _baseItem.Image = toolstripIcon;
             _baseItem.Text = entry.Text;
             _baseItem.Tag = new MLContextData()
             {
@@ -158,6 +176,9 @@ namespace MLRat.Forms
         void AddMenuItem(MLPlugin _plugin, ToolStripMenuItem parent, MLRatContextEntry entry)
         {
             ToolStripMenuItem _menu = new ToolStripMenuItem();
+            Image toolstripIcon = getImage(entry.Icon);
+            if (toolstripIcon != null)
+                _menu.Image = toolstripIcon;
             _menu.Text = entry.Text;
             _menu.Tag = new MLContextData()
             {
@@ -262,8 +283,6 @@ namespace MLRat.Forms
                             
                             if (command == NetworkPacket.Handshake)
                             {
-                                string addUsername = (string) data[2];
-                                string OS = (string)data[3];
                                 _ClientData.Handshaken = true;
                                 _ClientData.Encryption.GenerateRandomKey();
                                 client.Send(Guid.Empty, (byte)NetworkPacket.Connect, _ClientData.Encryption.Key);
@@ -401,7 +420,7 @@ namespace MLRat.Forms
                         Array.Copy(buffer, 0, Packet, 0, bytesRead);
                         client.Send(Guid.Empty, (byte)NetworkPacket.UpdatePlugin, ID, Packet,
                             _pluginUpdate.Position == _pluginUpdate.Length);
-                        Thread.Sleep(100);
+                        //Thread.Sleep(100);
                     }
                 }
             }
@@ -432,7 +451,8 @@ namespace MLRat.Forms
         {
             this.Invoke((MethodInvoker)delegate()
             {
-                clientList.Items.Remove(lv);
+                if(clientList!=null)
+                    clientList.Items.Remove(lv);
             });
         }
 

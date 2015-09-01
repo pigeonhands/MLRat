@@ -11,6 +11,7 @@ namespace MLRatClient.Plugin
         public Guid ClientPluginID { get; private set; }
         public string Checksum { get; private set; }
         public IClientPlugin ClientPlugin { get; private set; }
+        public string Path { get; set; }
         public MLClientPlugin(byte[] _cpb)
         {
             ClientPluginBytes = _cpb;

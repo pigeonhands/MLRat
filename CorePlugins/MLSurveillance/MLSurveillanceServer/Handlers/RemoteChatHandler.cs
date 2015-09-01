@@ -66,6 +66,7 @@ namespace MLSurveillanceServer.Handlers
                 {
                     formHandler[client.ID] = new RemoteChatForm(client);
                     formHandler[client.ID].FormClosed += RemoteChatHandler_FormClosed;
+                    formHandler[client.ID].Text = string.Format("File Explorer ({0})", client.GetVariable<string>("Username", ""));
                     formHandler[client.ID].Show();
                 }
             }

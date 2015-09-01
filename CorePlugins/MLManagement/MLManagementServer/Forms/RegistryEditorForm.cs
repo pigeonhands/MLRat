@@ -18,7 +18,7 @@ namespace MLManagementServer.Forms
     public partial class RegistryEditorForm : Form
     {
         public IClient Client { get; set; }
-        TreeNode LoadingNode, UpdatingNode, CurrentUser, LocalMachine, ClassesRoot, UsersRoot, CurrentConfig ;
+        TreeNode LoadingNode, UpdatingNode, CurrentUser, LocalMachine, UsersRoot, CurrentConfig;
         private bool IsLoading = false;
         public RegistryEditorForm(IClient _client)
         {
@@ -333,7 +333,7 @@ namespace MLManagementServer.Forms
         {
             if (node.Equals(CurrentUser)) return RegistryKeyType.CurrentUser;
             if (node.Equals(LocalMachine)) return RegistryKeyType.LocalMachine;
-            if (node.Equals(ClassesRoot)) return RegistryKeyType.ClassesRoot;
+           // if (node.Equals(ClassesRoot)) return RegistryKeyType.ClassesRoot;
             if (node.Equals(CurrentConfig)) return RegistryKeyType.CurrentConfig;
             if (node.Equals(UsersRoot)) return RegistryKeyType.UserRoot;
             return RegistryKeyType.None;

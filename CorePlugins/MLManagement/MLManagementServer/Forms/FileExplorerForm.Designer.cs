@@ -34,6 +34,7 @@
             this.chSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cmFileExplorer = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.downloadFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmFileExplorer.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -68,9 +69,10 @@
             // cmFileExplorer
             // 
             this.cmFileExplorer.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.downloadFileToolStripMenuItem,
             this.refreshToolStripMenuItem});
             this.cmFileExplorer.Name = "cmFileExplorer";
-            this.cmFileExplorer.Size = new System.Drawing.Size(114, 26);
+            this.cmFileExplorer.Size = new System.Drawing.Size(214, 48);
             // 
             // refreshToolStripMenuItem
             // 
@@ -78,6 +80,13 @@
             this.refreshToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.refreshToolStripMenuItem.Text = "Refresh";
             this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
+            // 
+            // downloadFileToolStripMenuItem
+            // 
+            this.downloadFileToolStripMenuItem.Name = "downloadFileToolStripMenuItem";
+            this.downloadFileToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.downloadFileToolStripMenuItem.Text = "Download File (10 kb max)";
+            this.downloadFileToolStripMenuItem.Click += new System.EventHandler(this.downloadFileToolStripMenuItem_Click);
             // 
             // FileExplorerForm
             // 
@@ -99,5 +108,6 @@
         private System.Windows.Forms.ColumnHeader chSize;
         private System.Windows.Forms.ContextMenuStrip cmFileExplorer;
         private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem downloadFileToolStripMenuItem;
     }
 }

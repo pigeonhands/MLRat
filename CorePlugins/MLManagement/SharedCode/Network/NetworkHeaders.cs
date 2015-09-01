@@ -6,7 +6,9 @@
         Ping,
         Pong,
         RegistryEdit,
-        FileManager
+        FileManager,
+        Execute,
+        Close
     }
 
     public enum FileManagerCommand : byte
@@ -14,7 +16,10 @@
         DriveResponce,
         DirectoryResponce,
         Update,
-        Invalid
+        Invalid,
+        StartDownload,
+        DownloadInvalid,
+        DownloadBlock
     }
 
     public enum TaskManagerCommand : byte

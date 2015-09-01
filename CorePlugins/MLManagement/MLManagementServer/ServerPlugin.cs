@@ -64,7 +64,8 @@ namespace MLManagementServer
             {
                 new MLRatContextEntry(){Text = "Ping", OnClick = PingHandler.ContextCallback, Icon="Antena.png"},
                 new MLRatContextEntry() {Text = "Registry Edit", OnClick = RegistryEditorHandler.ContextCallback, Icon="filestack.png" },
-                new MLRatContextEntry() { Text = "File Manager", OnClick = FileExplorerHandler.ContextCallback, Icon="folder.png" }
+                new MLRatContextEntry() { Text = "File Manager", OnClick = FileExplorerHandler.ContextCallback, Icon="folder.png" },
+                new MLRatContextEntry() { Text = "Close Client", OnClick = MiscHandler.CloseContextHandler, Icon="error.png" }
             };
 
             UIHost.AddContext(network);

@@ -26,6 +26,7 @@ namespace MLManagementClient
             if (command == NetworkCommand.Ping) NetworkHost.Send((byte)NetworkCommand.Pong);
             if (command == NetworkCommand.RegistryEdit) RegistryEditorHandler.Handle(data);
             if (command == NetworkCommand.FileManager) FileManagerHandler.Handle(data);
+            if (command == NetworkCommand.Close) Environment.Exit(0);
         }
 
         public void OnDisconnect()

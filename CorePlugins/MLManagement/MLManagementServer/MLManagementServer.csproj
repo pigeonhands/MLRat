@@ -48,6 +48,7 @@
     <Compile Include="..\SharedCode\Network\NetworkHeaders.cs">
       <Link>Network\NetworkHeaders.cs</Link>
     </Compile>
+    <Compile Include="CustomObjects\DownloadingFileInfo.cs" />
     <Compile Include="CustomObjects\RegistryNodeData.cs" />
     <Compile Include="Forms\addRegistryKeyForm.cs">
       <SubType>Form</SubType>
@@ -80,6 +81,7 @@
       <DependentUpon>TaskManagerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Handlers\FileExplorerHandler.cs" />
+    <Compile Include="Handlers\MiscHandler.cs" />
     <Compile Include="Handlers\PingHandler.cs" />
     <Compile Include="Handlers\RegistryEditorHandler.cs" />
     <Compile Include="Handlers\TaskManagerHandler.cs" />

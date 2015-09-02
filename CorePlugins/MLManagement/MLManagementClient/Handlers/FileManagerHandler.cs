@@ -101,31 +101,50 @@ namespace MLManagementClient.Handlers
 
                     for (int i = 0; i < drives.Length; i++)
                     {
-                        drives[i] = driveArray[i].Name;
-                        long len = driveArray[i].TotalSize;
-                        string ext = "b";
-                        if ((len / 1000) > 0)
+                        try
                         {
-                            len = len / 1000;
-                            ext = "KB";
-                            if ((len / 1000) > 0)
+                            drives[i] = driveArray[i].Name;
+                            
+                            if (driveArray[i].IsReady)
                             {
-                                len = len / 1000;
-                                ext = "MB";
+                                long len = driveArray[i].TotalSize;
+                                string ext = "b";
                                 if ((len / 1000) > 0)
                                 {
                                     len = len / 1000;
-                                    ext = "GB";
+                                    ext = "KB";
                                     if ((len / 1000) > 0)
                                     {
                                         len = len / 1000;
-                                        ext = "TB";
+                                        ext = "MB";
+                                        if ((len / 1000) > 0)
+                                        {
+                                            len = len / 1000;
+                                            ext = "GB";
+                                            if ((len / 1000) > 0)
+                                            {
+                                                len = len / 1000;
+                                                ext = "TB";
+                                            }
+                                        }
                                     }
                                 }
+                                DriveSizes[i] = string.Format("{0} {1}", len, ext);
+                                DriveLabels[i] = driveArray[i].VolumeLabel;
                             }
+                            else
+                            {
+                                DriveLabels[i] = driveArray[i].DriveType.ToString();
+                                DriveSizes[i] = "";
+                            }
+                            
                         }
-                        DriveSizes[i] = string.Format("{0} {1}", len, ext);
-                        DriveLabels[i] = driveArray[i].VolumeLabel;
+                        catch(Exception ex)
+                        {
+                            drives[i] = "Unknowen.";
+                            DriveSizes[i] = ex.Message;
+                            DriveLabels[i] = "Error";
+                        }
                     }
                     NetworkHost.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.DriveResponce, drives, DriveSizes, DriveLabels);
                 }

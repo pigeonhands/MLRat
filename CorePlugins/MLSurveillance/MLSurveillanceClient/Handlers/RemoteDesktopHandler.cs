@@ -21,6 +21,7 @@ namespace MLSurveillanceClient.Handlers
         {
             ImgEncoder = GetEncoder(ImageFormat.Gif);
             NetworkHost = host;
+            
         }
         public static void Handle(object[] data)
         {

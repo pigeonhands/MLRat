@@ -5,8 +5,9 @@ namespace MLRat.Server
 {
     public interface IServerUIHandler
     {
-        void AddContext(MLRatContextEntry entry);
+        void AddContext(params MLRatContextEntry[] entry);
         IMLRatColumn AddColumn(string name, string defaultVaule);
+        void Log(string value, Color c);
         Image GetImage(string name);
     }
 }

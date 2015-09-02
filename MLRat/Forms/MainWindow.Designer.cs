@@ -50,6 +50,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.pluginPanel = new System.Windows.Forms.Panel();
+            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.rtbPluginLog = new System.Windows.Forms.RichTextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -58,6 +62,9 @@
             this.gbNetwork.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.tabPage2.SuspendLayout();
+            this.tabControl2.SuspendLayout();
+            this.tabPage4.SuspendLayout();
+            this.tabPage5.SuspendLayout();
             this.SuspendLayout();
             // 
             // clientList
@@ -266,7 +273,7 @@
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.pluginPanel);
+            this.tabPage2.Controls.Add(this.tabControl2);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -278,11 +285,56 @@
             // pluginPanel
             // 
             this.pluginPanel.AutoScroll = true;
+            this.pluginPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pluginPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pluginPanel.Location = new System.Drawing.Point(3, 3);
             this.pluginPanel.Name = "pluginPanel";
-            this.pluginPanel.Size = new System.Drawing.Size(681, 215);
+            this.pluginPanel.Size = new System.Drawing.Size(667, 183);
             this.pluginPanel.TabIndex = 0;
+            // 
+            // tabControl2
+            // 
+            this.tabControl2.Alignment = System.Windows.Forms.TabAlignment.Bottom;
+            this.tabControl2.Controls.Add(this.tabPage4);
+            this.tabControl2.Controls.Add(this.tabPage5);
+            this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl2.Location = new System.Drawing.Point(3, 3);
+            this.tabControl2.Name = "tabControl2";
+            this.tabControl2.SelectedIndex = 0;
+            this.tabControl2.Size = new System.Drawing.Size(681, 215);
+            this.tabControl2.TabIndex = 1;
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.pluginPanel);
+            this.tabPage4.Location = new System.Drawing.Point(4, 4);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(673, 189);
+            this.tabPage4.TabIndex = 0;
+            this.tabPage4.Text = "List";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.rtbPluginLog);
+            this.tabPage5.Location = new System.Drawing.Point(4, 4);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(673, 189);
+            this.tabPage5.TabIndex = 1;
+            this.tabPage5.Text = "Log";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // rtbPluginLog
+            // 
+            this.rtbPluginLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbPluginLog.Location = new System.Drawing.Point(3, 3);
+            this.rtbPluginLog.Name = "rtbPluginLog";
+            this.rtbPluginLog.ReadOnly = true;
+            this.rtbPluginLog.Size = new System.Drawing.Size(667, 183);
+            this.rtbPluginLog.TabIndex = 0;
+            this.rtbPluginLog.Text = "";
             // 
             // MainWindow
             // 
@@ -303,6 +355,9 @@
             this.gbNetwork.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.tabPage2.ResumeLayout(false);
+            this.tabControl2.ResumeLayout(false);
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage5.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -330,5 +385,9 @@
         private System.Windows.Forms.TextBox tbIPBuild;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TabControl tabControl2;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.RichTextBox rtbPluginLog;
     }
 }

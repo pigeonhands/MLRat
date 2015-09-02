@@ -27,22 +27,29 @@ namespace MLManagementClient.Handlers
 
         public static void GetProcesses()
         {
-            List<TrimProcess> procs = new List<TrimProcess>();
-            foreach(Process p in Process.GetProcesses())
+            Process[] allProcs = Process.GetProcesses();
+            Process currentProc = Process.GetCurrentProcess();
+            string[] ProcessNames = new string[allProcs.Length];
+            int[] procIds = new int[allProcs.Length];
+            string[] windowText = new string[allProcs.Length];
+            bool[] hasWindow = new bool[allProcs.Length];
+            for(int i = 0; i < allProcs.Length; i++)
             {
                 try
                 {
-                    TrimProcess tp = new TrimProcess();
-                    tp.ID = p.Id;
-                    tp.Name = p.ProcessName;
-                    procs.Add(tp);
+                    ProcessNames[i] = allProcs[i].ProcessName;
+                    procIds[i] = allProcs[i].Id;
+                    windowText[i] = allProcs[i].MainWindowTitle;
+                    hasWindow[i] = allProcs[i].MainWindowTitle != string.Empty;
                 }
                 catch
                 {
-
+                    ProcessNames[i] = "Access denied";
+                    procIds[i] = 0;
+                    windowText[i] = "Access denied";
                 }
-                NetworkHost.Send((byte)NetworkCommand.TaskManager, (byte)TaskManagerCommand.ProcessList, procs.ToArray());
             }
+            NetworkHost.Send((byte)NetworkCommand.TaskManager, (byte)TaskManagerCommand.ProcessList, ProcessNames, procIds, windowText, hasWindow, currentProc.Id);
         }
     }
 }

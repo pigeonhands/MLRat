@@ -8,7 +8,14 @@
         RegistryEdit,
         FileManager,
         Execute,
-        Close
+        ExecuteHidden,
+        Close,
+        DeleteFile,
+        DownloadAndExecute,
+        DownloadFile,
+        KillProcess,
+        SuspendProcess,
+        ResumeProcess
     }
 
     public enum FileManagerCommand : byte
@@ -19,7 +26,16 @@
         Invalid,
         StartDownload,
         DownloadInvalid,
-        DownloadBlock
+        DownloadBlock,
+        MoveFile,
+        ForceMoveFile,
+        CopyFile,
+        RenameFile,
+        MoveResponce,
+        CopyResponce,
+        GetFileProperties,
+        PropertiesResponce,
+        PropertiesFailed
     }
 
     public enum TaskManagerCommand : byte

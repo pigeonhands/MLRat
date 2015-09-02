@@ -45,11 +45,12 @@ namespace MLRat.Forms
         {
             if (plugin != null)
             {
-                Console.WriteLine("{0}: {1}", plugin.ClientPluginID, ex.ToString());
+                rtbPluginLog.LogText(string.Format("[{0}] {1}", plugin.PluginInfomation.PluginName, ex.Message), Color.Red);
+                //Console.WriteLine("{0}: {1}", plugin.ClientPluginID, ex.ToString());
             }
             else
             {
-                Console.WriteLine(ex.ToString());
+                rtbPluginLog.LogText(ex.Message, Color.Red);
             }
         }
 
@@ -74,11 +75,23 @@ namespace MLRat.Forms
                 pluginPanel.Controls.Add(_display);
                 LoadedPlugins.Add(_plugin.ClientPluginID, _plugin);
                 Console.WriteLine("Loaded plugin: {0}", _plugin.ClientPluginID.ToString("n"));
-                _plugin.ServerPlugin.OnPluginLoad(new MLUiHost(_plugin, OncontextAdd, OnColumnAdd, getImage));
+                _plugin.ServerPlugin.OnPluginLoad(new MLUiHost(_plugin, OncontextAdd, OnColumnAdd, getImage, LogText));
             }
             catch(Exception ex)
             {
                 DisplayException(_plugin, ex);
+            }
+        }
+
+        void LogText(MLPlugin plugin, string text, Color c)
+        {
+            try
+            {
+                rtbPluginLog.LogText(string.Format("[{0}] ", plugin.PluginInfomation.PluginName) + text, c);
+            }
+            catch(Exception ex)
+            {
+                DisplayException(plugin, ex);
             }
         }
 
@@ -152,7 +165,15 @@ namespace MLRat.Forms
             }
         }
 
-        void OncontextAdd(MLPlugin _plugin, MLRatContextEntry entry)
+        void OncontextAdd(MLPlugin _plugin, MLRatContextEntry[] entry)
+        {
+            foreach(MLRatContextEntry contextentry in entry)
+            {
+                AddSingleContext(_plugin, contextentry);
+            }
+        }
+
+        void AddSingleContext(MLPlugin _plugin, MLRatContextEntry entry)
         {
             ToolStripMenuItem _baseItem = new ToolStripMenuItem();
             Image toolstripIcon = getImage(entry.Icon);
@@ -166,7 +187,7 @@ namespace MLRat.Forms
             };
             if (entry.OnClick != null)
                 _baseItem.Click += ContextMenu_Click;
-            if(entry.SubMenus != null)
+            if (entry.SubMenus != null)
             {
                 foreach (var subentry in entry.SubMenus)
                     AddMenuItem(_plugin, _baseItem, subentry);
@@ -498,6 +519,8 @@ namespace MLRat.Forms
         static extern bool UpdateResource(IntPtr hUpdate, string lpType, string lpName, ushort wLanguage, IntPtr lpData, uint cbData);
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool EndUpdateResource(IntPtr hUpdate, bool fDiscard);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool DeleteFile(string path);
 
         #endregion
 
@@ -529,13 +552,33 @@ namespace MLRat.Forms
                     throw new Exception();
                 if (!EndUpdateResource(resourcePointer, false))
                     throw new Exception();
+
+                handle.Free();
                 MessageBox.Show("Built!");
             }
             catch
             {
-                File.Delete(outputFile);
+                DeleteFile(outputFile);
                 MessageBox.Show("Failed");
             }
+        }
+    }
+
+    public static class RichTextBoxExtensions
+    {
+        public static void LogText(this RichTextBox box, string text, Color color)
+        {
+            box.Invoke((MethodInvoker)delegate ()
+            {
+                box.SelectionStart = box.TextLength;
+                box.SelectionLength = 0;
+
+                box.SelectionColor = color;
+                box.AppendText(text + "\n");
+                box.SelectionColor = box.ForeColor;
+                box.SelectionStart = box.Text.Length;
+                box.ScrollToCaret();
+            });
         }
     }
 }

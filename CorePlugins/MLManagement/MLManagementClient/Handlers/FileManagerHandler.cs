@@ -16,12 +16,52 @@ namespace MLManagementClient.Handlers
             NetworkHost = _connection;
         }
 
+        public static void HandleMove(object[] args)
+        {
+            FileManagerCommand command = (FileManagerCommand)args[1];
+            bool force = command == FileManagerCommand.ForceMoveFile;
+            Guid ID = (Guid)args[2];
+            string from = (string)args[3];
+            string to = (string)args[4];
+            NetworkHost.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.MoveResponce, ID, MiscHandler.MoveFile(from, to, force));
+        }
+        public static void HandleCopy(object[] args)
+        {
+            Guid ID = (Guid)args[2];
+            string from = (string)args[3];
+            string to = (string)args[4];
+            NetworkHost.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.CopyResponce,ID, MiscHandler.CopyFile(from, to));
+        }
+
+        static void GetFileProperties(Guid id, string path)
+        {
+            try
+            {
+                FileInfo fi = new FileInfo(path);
+                NetworkHost.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.PropertiesResponce, id,
+                    fi.Name,
+                    fi.FullName,
+                    fi.CreationTime.ToLongDateString(),
+                    fi.LastWriteTime.ToLongDateString(),
+                    fi.Length.ToString(),
+                    (fi.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
+                    (fi.Attributes & FileAttributes.System) == FileAttributes.System
+                    );
+            }
+            catch
+            {
+                NetworkHost.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.PropertiesFailed, id);
+            }
+        }
 
         public static void Handle(object[] data)
         {
             FileManagerCommand command = (FileManagerCommand)data[1];
             Console.WriteLine("File Manager: {0}", command.ToString());
 
+            if (command == FileManagerCommand.ForceMoveFile || command == FileManagerCommand.MoveFile) HandleMove(data);
+            if (command == FileManagerCommand.CopyFile) HandleCopy(data);
+            if (command == FileManagerCommand.GetFileProperties) GetFileProperties((Guid)data[2], (string)data[3]);
 
            if(command == FileManagerCommand.StartDownload)
             {

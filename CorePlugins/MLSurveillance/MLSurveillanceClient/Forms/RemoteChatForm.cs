@@ -13,8 +13,8 @@ namespace MLSurveillanceClient.Forms
 {
     public partial class RemoteChatForm : Form
     {
-        IClientConnection networkHost;
-        public RemoteChatForm(IClientConnection initNet)
+        IClientHost networkHost;
+        public RemoteChatForm(IClientHost initNet)
         {
             InitializeComponent();
             networkHost = initNet;
@@ -40,7 +40,7 @@ namespace MLSurveillanceClient.Forms
 
         }
 
-        public void SetnetworkHost(IClientConnection network)
+        public void SetnetworkHost(IClientHost network)
         {
             networkHost = network;
         }

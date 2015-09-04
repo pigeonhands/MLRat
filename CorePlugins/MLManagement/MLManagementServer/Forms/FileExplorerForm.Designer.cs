@@ -37,11 +37,18 @@
             this.normalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hiddenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.downloadFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gotoSpecialFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rootdriveListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.apptadaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.desktopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.downloadFileHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.tbPath = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lvFileBucket = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -54,7 +61,8 @@
             this.copyHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeFromBucketToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.visualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showCustomIconsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmFileExplorer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -65,17 +73,19 @@
             // 
             // lvFileView
             // 
+            this.lvFileView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lvFileView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.chFile,
             this.chSize});
             this.lvFileView.ContextMenuStrip = this.cmFileExplorer;
-            this.lvFileView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lvFileView.FullRowSelect = true;
             this.lvFileView.GridLines = true;
-            this.lvFileView.Location = new System.Drawing.Point(0, 0);
+            this.lvFileView.Location = new System.Drawing.Point(3, 25);
             this.lvFileView.MultiSelect = false;
             this.lvFileView.Name = "lvFileView";
-            this.lvFileView.Size = new System.Drawing.Size(713, 295);
+            this.lvFileView.Size = new System.Drawing.Size(628, 198);
             this.lvFileView.TabIndex = 3;
             this.lvFileView.UseCompatibleStateImageBehavior = false;
             this.lvFileView.View = System.Windows.Forms.View.Details;
@@ -96,13 +106,15 @@
             this.cmFileExplorer.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.executeToolStripMenuItem,
             this.downloadFileToolStripMenuItem,
+            this.gotoSpecialFolderToolStripMenuItem,
             this.refreshToolStripMenuItem,
+            this.visualToolStripMenuItem,
             this.copyToolStripMenuItem,
             this.downloadFileHereToolStripMenuItem,
             this.deleteFileToolStripMenuItem,
             this.propertiesToolStripMenuItem});
             this.cmFileExplorer.Name = "cmFileExplorer";
-            this.cmFileExplorer.Size = new System.Drawing.Size(214, 180);
+            this.cmFileExplorer.Size = new System.Drawing.Size(214, 202);
             // 
             // executeToolStripMenuItem
             // 
@@ -135,6 +147,37 @@
             this.downloadFileToolStripMenuItem.Text = "Download File (10 kb max)";
             this.downloadFileToolStripMenuItem.Click += new System.EventHandler(this.downloadFileToolStripMenuItem_Click);
             // 
+            // gotoSpecialFolderToolStripMenuItem
+            // 
+            this.gotoSpecialFolderToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.rootdriveListToolStripMenuItem,
+            this.apptadaToolStripMenuItem,
+            this.desktopToolStripMenuItem});
+            this.gotoSpecialFolderToolStripMenuItem.Name = "gotoSpecialFolderToolStripMenuItem";
+            this.gotoSpecialFolderToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.gotoSpecialFolderToolStripMenuItem.Text = "Goto Special Folder";
+            // 
+            // rootdriveListToolStripMenuItem
+            // 
+            this.rootdriveListToolStripMenuItem.Name = "rootdriveListToolStripMenuItem";
+            this.rootdriveListToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.rootdriveListToolStripMenuItem.Text = "Root (drive list)";
+            this.rootdriveListToolStripMenuItem.Click += new System.EventHandler(this.rootdriveListToolStripMenuItem_Click);
+            // 
+            // apptadaToolStripMenuItem
+            // 
+            this.apptadaToolStripMenuItem.Name = "apptadaToolStripMenuItem";
+            this.apptadaToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.apptadaToolStripMenuItem.Text = "Appdata";
+            this.apptadaToolStripMenuItem.Click += new System.EventHandler(this.apptadaToolStripMenuItem_Click);
+            // 
+            // desktopToolStripMenuItem
+            // 
+            this.desktopToolStripMenuItem.Name = "desktopToolStripMenuItem";
+            this.desktopToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.desktopToolStripMenuItem.Text = "Desktop";
+            this.desktopToolStripMenuItem.Click += new System.EventHandler(this.desktopToolStripMenuItem_Click);
+            // 
             // refreshToolStripMenuItem
             // 
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
@@ -163,6 +206,13 @@
             this.deleteFileToolStripMenuItem.Text = "Delete File";
             this.deleteFileToolStripMenuItem.Click += new System.EventHandler(this.deleteFileToolStripMenuItem_Click);
             // 
+            // propertiesToolStripMenuItem
+            // 
+            this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
+            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.propertiesToolStripMenuItem.Text = "Properties";
+            this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
+            // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -172,15 +222,37 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.tbPath);
+            this.splitContainer1.Panel1.Controls.Add(this.label2);
             this.splitContainer1.Panel1.Controls.Add(this.lvFileView);
+            this.splitContainer1.Panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.splitContainer1_Panel1_Paint);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.label1);
             this.splitContainer1.Panel2.Controls.Add(this.lvFileBucket);
-            this.splitContainer1.Size = new System.Drawing.Size(713, 400);
-            this.splitContainer1.SplitterDistance = 295;
+            this.splitContainer1.Size = new System.Drawing.Size(634, 309);
+            this.splitContainer1.SplitterDistance = 227;
             this.splitContainer1.TabIndex = 4;
+            // 
+            // tbPath
+            // 
+            this.tbPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbPath.Location = new System.Drawing.Point(41, 4);
+            this.tbPath.Name = "tbPath";
+            this.tbPath.ReadOnly = true;
+            this.tbPath.Size = new System.Drawing.Size(590, 20);
+            this.tbPath.TabIndex = 5;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 7);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(32, 13);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Path:";
             // 
             // label1
             // 
@@ -207,7 +279,7 @@
             this.lvFileBucket.Location = new System.Drawing.Point(0, 20);
             this.lvFileBucket.MultiSelect = false;
             this.lvFileBucket.Name = "lvFileBucket";
-            this.lvFileBucket.Size = new System.Drawing.Size(710, 81);
+            this.lvFileBucket.Size = new System.Drawing.Size(631, 58);
             this.lvFileBucket.TabIndex = 0;
             this.lvFileBucket.UseCompatibleStateImageBehavior = false;
             this.lvFileBucket.View = System.Windows.Forms.View.Details;
@@ -277,24 +349,36 @@
             this.removeFromBucketToolStripMenuItem.Text = "Remove from bucket";
             this.removeFromBucketToolStripMenuItem.Click += new System.EventHandler(this.removeFromBucketToolStripMenuItem_Click);
             // 
-            // propertiesToolStripMenuItem
+            // visualToolStripMenuItem
             // 
-            this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
-            this.propertiesToolStripMenuItem.Text = "Properties";
-            this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
+            this.visualToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showCustomIconsToolStripMenuItem});
+            this.visualToolStripMenuItem.Name = "visualToolStripMenuItem";
+            this.visualToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.visualToolStripMenuItem.Text = "Visual";
+            // 
+            // showCustomIconsToolStripMenuItem
+            // 
+            this.showCustomIconsToolStripMenuItem.Checked = true;
+            this.showCustomIconsToolStripMenuItem.CheckOnClick = true;
+            this.showCustomIconsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.showCustomIconsToolStripMenuItem.Name = "showCustomIconsToolStripMenuItem";
+            this.showCustomIconsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.showCustomIconsToolStripMenuItem.Text = "Show custom icons";
+            this.showCustomIconsToolStripMenuItem.Click += new System.EventHandler(this.showCustomIconsToolStripMenuItem_Click);
             // 
             // FileExplorerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(713, 400);
+            this.ClientSize = new System.Drawing.Size(634, 309);
             this.Controls.Add(this.splitContainer1);
             this.Name = "FileExplorerForm";
             this.Text = "FileExplorerForm";
             this.Load += new System.EventHandler(this.FileExplorerForm_Load);
             this.cmFileExplorer.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -331,5 +415,13 @@
         private System.Windows.Forms.ToolStripMenuItem hiddenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem downloadFileHereToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem propertiesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gotoSpecialFolderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem apptadaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem desktopToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rootdriveListToolStripMenuItem;
+        private System.Windows.Forms.TextBox tbPath;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ToolStripMenuItem visualToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showCustomIconsToolStripMenuItem;
     }
 }

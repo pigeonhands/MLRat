@@ -38,8 +38,12 @@
             this.cmTasks = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.killToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.threadsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.suspendToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resumeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmTasks.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -87,24 +91,33 @@
             this.cmTasks.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.refreshToolStripMenuItem,
             this.killToolStripMenuItem,
-            this.suspendToolStripMenuItem,
-            this.resumeToolStripMenuItem});
+            this.threadsToolStripMenuItem,
+            this.windowToolStripMenuItem});
             this.cmTasks.Name = "cmTasks";
-            this.cmTasks.Size = new System.Drawing.Size(120, 92);
+            this.cmTasks.Size = new System.Drawing.Size(153, 114);
             // 
             // refreshToolStripMenuItem
             // 
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.refreshToolStripMenuItem.Text = "Refresh";
             this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
             // 
             // killToolStripMenuItem
             // 
             this.killToolStripMenuItem.Name = "killToolStripMenuItem";
-            this.killToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.killToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.killToolStripMenuItem.Text = "Kill";
             this.killToolStripMenuItem.Click += new System.EventHandler(this.killToolStripMenuItem_Click);
+            // 
+            // threadsToolStripMenuItem
+            // 
+            this.threadsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.suspendToolStripMenuItem,
+            this.resumeToolStripMenuItem});
+            this.threadsToolStripMenuItem.Name = "threadsToolStripMenuItem";
+            this.threadsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.threadsToolStripMenuItem.Text = "Threads";
             // 
             // suspendToolStripMenuItem
             // 
@@ -119,6 +132,27 @@
             this.resumeToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.resumeToolStripMenuItem.Text = "Resume";
             this.resumeToolStripMenuItem.Click += new System.EventHandler(this.resumeToolStripMenuItem_Click);
+            // 
+            // windowToolStripMenuItem
+            // 
+            this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.hideToolStripMenuItem});
+            this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
+            this.windowToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.windowToolStripMenuItem.Text = "Window";
+            // 
+            // hideToolStripMenuItem
+            // 
+            this.hideToolStripMenuItem.Name = "hideToolStripMenuItem";
+            this.hideToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.hideToolStripMenuItem.Text = "Hide";
+            this.hideToolStripMenuItem.Click += new System.EventHandler(this.hideToolStripMenuItem_Click);
+            // 
+            // gToolStripMenuItem
+            // 
+            this.gToolStripMenuItem.Name = "gToolStripMenuItem";
+            this.gToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.gToolStripMenuItem.Text = "g";
             // 
             // TaskManagerForm
             // 
@@ -145,5 +179,9 @@
         private System.Windows.Forms.ToolStripMenuItem killToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem suspendToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resumeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem threadsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem windowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hideToolStripMenuItem;
     }
 }

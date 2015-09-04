@@ -32,12 +32,12 @@ namespace MLManagementServer.Handlers
                     string[] procNames = (string[])data[2];
                     int[] procIds = (int[])data[3];
                     string[] procWindows = (string[])data[4];
-                    bool[] hasWindow = (bool[])data[5];
+                    //bool[] hasWindow = (bool[])data[5];
+                    int thisProc = (int)data[5];
 
-                    int thisProc = (int)data[6];
                     for(int i = 0; i < procNames.Length; i++)
                     {
-                        f.AddProcess(procNames[i], procIds[i], procWindows[i], hasWindow[i], procIds[i] == thisProc);
+                        f.AddProcess(procNames[i], procIds[i], procWindows[i], procWindows[i] != string.Empty, procIds[i] == thisProc);
                     }
                 }
             }

@@ -40,5 +40,10 @@ namespace MLRat.Networking
             }
             
         }
+
+        public void Disconnect()
+        {
+            ClientData.ClientSocket.Disconnect();
+        }
     }
 }

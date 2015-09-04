@@ -10,9 +10,9 @@ namespace MLManagementClient.Handlers
 {
     public static class RegistryEditorHandler
     {
-        private static IClientConnection NetworkHost = null;
+        private static IClientHost NetworkHost = null;
 
-        public static void SetNetworkHost(IClientConnection _connection)
+        public static void SetNetworkHost(IClientHost _connection)
         {
             NetworkHost = _connection;
         }

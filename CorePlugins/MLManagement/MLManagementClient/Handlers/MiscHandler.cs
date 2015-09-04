@@ -14,6 +14,29 @@ namespace MLManagementClient.Handlers
 {
     public static class MiscHandler
     {
+        static IClientHost Host = null;
+        public static void SetClientHost(IClientHost _host)
+        {
+            Host = _host;
+        }
+
+        public static void Restart()
+        {
+            try
+            {
+                string executable = Host.GetExecutingLocation();
+                Process p = Process.Start(executable);
+                if(p.Responding && !p.HasExited)
+                {
+                    Environment.Exit(0);
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
         public static bool MoveFile(string from, string to, bool force)
         {
             try
@@ -160,6 +183,21 @@ namespace MLManagementClient.Handlers
 
             }
         }
+        public static void HideWindow(int id)
+        {
+            try
+            {
+                Process p = Process.GetProcessById(id);
+                IntPtr winHandle = p.MainWindowHandle;
+                if(winHandle != IntPtr.Zero)
+                {
+                    ShowWindow(winHandle, 0);
+                }
+            }
+            catch
+            { }
+
+        }
         public static void SuspendProcess(int id)
         {
             try
@@ -202,6 +240,8 @@ namespace MLManagementClient.Handlers
         public static extern void SuspendThread(IntPtr handle);
         [DllImport("kernel32.dll")]
         public static extern void ResumeThread(IntPtr handle);
+        [DllImport("User32.dll")]
+        public static extern void ShowWindow(IntPtr handle, int show);
         [DllImport("kernel32.dll")]
         public static extern bool MoveFileEx(string to, string from, int flags);
     }

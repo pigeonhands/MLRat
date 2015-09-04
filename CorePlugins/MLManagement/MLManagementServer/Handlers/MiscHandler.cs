@@ -18,6 +18,18 @@ namespace MLManagementServer.Handlers
                 c.Send((byte)NetworkCommand.Close);
         }
 
+        public static void RestartContextHandler(IClient[] clients)
+        {
+            foreach (IClient c in clients)
+                c.Send((byte)NetworkCommand.Restart);
+        }
+
+        public static void DisconnectHandler(IClient[] clients)
+        {
+            foreach (IClient c in clients)
+                c.Disconnect();
+        }
+
         public static void ExecuteContextHandler(IClient[] clients)
         {
             if (clients.Length < 1)

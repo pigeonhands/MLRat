@@ -58,7 +58,7 @@ namespace MLSurveillanceServer
             surv.Icon = "camera.png";
             surv.SubMenus = new MLRatContextEntry[]
             {
-                    new MLRatContextEntry(){ Text = "Remote Desktop", OnClick = RemoteDesktopHandler.ContextCallback, Icon="desktop.png" },
+                    //new MLRatContextEntry(){ Text = "Remote Desktop", OnClick = RemoteDesktopHandler.ContextCallback, Icon="desktop.png" },
                     new MLRatContextEntry() { Text = "Remote Chat", OnClick = RemoteChatHandler.ContextCallback, Icon="chat.png" }
             };
             UIHost.AddContext(surv);

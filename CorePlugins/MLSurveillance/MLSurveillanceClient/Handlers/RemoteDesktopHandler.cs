@@ -14,12 +14,12 @@ namespace MLSurveillanceClient.Handlers
 {
     public static class RemoteDesktopHandler
     {
-        private static IClientConnection NetworkHost;
+        private static IClientHost NetworkHost;
         private static Image LastImage = null;
         private static ImageCodecInfo ImgEncoder;
-        public static void SetNetworkHost(IClientConnection host)
+        public static void SetNetworkHost(IClientHost host)
         {
-            ImgEncoder = GetEncoder(ImageFormat.Gif);
+            ImgEncoder = GetEncoder(ImageFormat.Png);
             NetworkHost = host;
             
         }
@@ -65,7 +65,7 @@ namespace MLSurveillanceClient.Handlers
                 using (var ms = new MemoryStream())
                 {
                     EncoderParameters par = new EncoderParameters(1);
-                    par.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 70L);
+                    par.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 0L);
                     bmp.Save(ms, ImgEncoder, par);
                     return ms.ToArray();
                 }

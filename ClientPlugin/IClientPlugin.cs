@@ -5,6 +5,6 @@
         void OnDataRecieved(object[] data);
         void OnConnect();
         void OnDisconnect();
-        void OnPluginLoad(IClientConnection server);
+        void OnPluginLoad(IClientHost server);
     }
 }

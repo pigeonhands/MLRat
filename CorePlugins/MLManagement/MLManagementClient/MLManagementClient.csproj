@@ -33,22 +33,23 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedCode\CustomObjects\TrimProcess.cs">
-      <Link>CustomObjects\TrimProcess.cs</Link>
-    </Compile>
     <Compile Include="..\SharedCode\Network\NetworkHeaders.cs">
       <Link>Network\NetworkHeaders.cs</Link>
     </Compile>
     <Compile Include="ClientPlugin.cs" />
+    <Compile Include="Handlers\ClipboardHandler.cs" />
+    <Compile Include="Handlers\ConsoleHandler.cs" />
     <Compile Include="Handlers\FileManagerHandler.cs" />
     <Compile Include="Handlers\MiscHandler.cs" />
     <Compile Include="Handlers\RegistryEditorHandler.cs" />
+    <Compile Include="Handlers\StartupHandler.cs" />
     <Compile Include="Handlers\TaskManagerHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -58,7 +59,9 @@
       <Name>ClientPlugin</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="CustomObjects\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

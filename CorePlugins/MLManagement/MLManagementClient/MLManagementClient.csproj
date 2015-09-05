@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -45,6 +46,7 @@
     </Compile>
     <Compile Include="ClientPlugin.cs" />
     <Compile Include="Handlers\ClipboardHandler.cs" />
+    <Compile Include="Handlers\ConnectionsHandler.cs" />
     <Compile Include="Handlers\ConsoleHandler.cs" />
     <Compile Include="Handlers\FileManagerHandler.cs" />
     <Compile Include="Handlers\MiscHandler.cs" />

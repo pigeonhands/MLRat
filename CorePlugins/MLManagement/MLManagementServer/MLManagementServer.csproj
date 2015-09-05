@@ -72,6 +72,12 @@
     <Compile Include="Forms\formClipboard.Designer.cs">
       <DependentUpon>formClipboard.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\formConnections.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\formConnections.Designer.cs">
+      <DependentUpon>formConnections.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\formConsole.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -96,6 +102,12 @@
     <Compile Include="Forms\formInput.Designer.cs">
       <DependentUpon>formInput.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\formMemoryEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\formMemoryEdit.Designer.cs">
+      <DependentUpon>formMemoryEdit.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\formStartupManager.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -115,6 +127,7 @@
       <DependentUpon>TaskManagerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Handlers\ClipboardHandler.cs" />
+    <Compile Include="Handlers\ConnectionsHandler.cs" />
     <Compile Include="Handlers\ConsoleHandler.cs" />
     <Compile Include="Handlers\FileExplorerHandler.cs" />
     <Compile Include="Handlers\MiscHandler.cs" />
@@ -144,6 +157,9 @@
     <EmbeddedResource Include="Forms\formClipboard.resx">
       <DependentUpon>formClipboard.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\formConnections.resx">
+      <DependentUpon>formConnections.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\formConsole.resx">
       <DependentUpon>formConsole.cs</DependentUpon>
     </EmbeddedResource>
@@ -155,6 +171,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\formInput.resx">
       <DependentUpon>formInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\formMemoryEdit.resx">
+      <DependentUpon>formMemoryEdit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\formStartupManager.resx">
       <DependentUpon>formStartupManager.cs</DependentUpon>

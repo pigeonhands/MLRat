@@ -44,6 +44,7 @@
             this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editMemoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmTasks.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -92,9 +93,10 @@
             this.refreshToolStripMenuItem,
             this.killToolStripMenuItem,
             this.threadsToolStripMenuItem,
-            this.windowToolStripMenuItem});
+            this.windowToolStripMenuItem,
+            this.editMemoryToolStripMenuItem});
             this.cmTasks.Name = "cmTasks";
-            this.cmTasks.Size = new System.Drawing.Size(153, 114);
+            this.cmTasks.Size = new System.Drawing.Size(153, 136);
             // 
             // refreshToolStripMenuItem
             // 
@@ -122,14 +124,14 @@
             // suspendToolStripMenuItem
             // 
             this.suspendToolStripMenuItem.Name = "suspendToolStripMenuItem";
-            this.suspendToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.suspendToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.suspendToolStripMenuItem.Text = "Suspend";
             this.suspendToolStripMenuItem.Click += new System.EventHandler(this.suspendToolStripMenuItem_Click);
             // 
             // resumeToolStripMenuItem
             // 
             this.resumeToolStripMenuItem.Name = "resumeToolStripMenuItem";
-            this.resumeToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.resumeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.resumeToolStripMenuItem.Text = "Resume";
             this.resumeToolStripMenuItem.Click += new System.EventHandler(this.resumeToolStripMenuItem_Click);
             // 
@@ -153,6 +155,13 @@
             this.gToolStripMenuItem.Name = "gToolStripMenuItem";
             this.gToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.gToolStripMenuItem.Text = "g";
+            // 
+            // editMemoryToolStripMenuItem
+            // 
+            this.editMemoryToolStripMenuItem.Name = "editMemoryToolStripMenuItem";
+            this.editMemoryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editMemoryToolStripMenuItem.Text = "Edit Memory";
+            this.editMemoryToolStripMenuItem.Click += new System.EventHandler(this.editMemoryToolStripMenuItem_Click);
             // 
             // TaskManagerForm
             // 
@@ -183,5 +192,6 @@
         private System.Windows.Forms.ToolStripMenuItem gToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem windowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hideToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editMemoryToolStripMenuItem;
     }
 }

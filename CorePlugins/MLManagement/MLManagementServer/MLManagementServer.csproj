@@ -42,12 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedCode\CustomObjects\TrimProcess.cs">
-      <Link>CustomObjects\TrimProcess.cs</Link>
-    </Compile>
     <Compile Include="..\SharedCode\Network\NetworkHeaders.cs">
       <Link>Network\NetworkHeaders.cs</Link>
     </Compile>
+    <Compile Include="CustomObjects\DownloadingFileInfo.cs" />
+    <Compile Include="CustomObjects\FileBucketInfo.cs" />
     <Compile Include="CustomObjects\RegistryNodeData.cs" />
     <Compile Include="Forms\addRegistryKeyForm.cs">
       <SubType>Form</SubType>
@@ -61,6 +60,60 @@
     <Compile Include="Forms\editRegistryKeyForm.Designer.cs">
       <DependentUpon>editRegistryKeyForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FileExplorerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FileExplorerForm.Designer.cs">
+      <DependentUpon>FileExplorerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\formClipboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\formClipboard.Designer.cs">
+      <DependentUpon>formClipboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\formConnections.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\formConnections.Designer.cs">
+      <DependentUpon>formConnections.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\formConsole.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\formConsole.Designer.cs">
+      <DependentUpon>formConsole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\formDownloadFile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\formDownloadFile.Designer.cs">
+      <DependentUpon>formDownloadFile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\formFileProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\formFileProperties.Designer.cs">
+      <DependentUpon>formFileProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\formInput.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\formInput.Designer.cs">
+      <DependentUpon>formInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\formMemoryEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\formMemoryEdit.Designer.cs">
+      <DependentUpon>formMemoryEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\formStartupManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\formStartupManager.Designer.cs">
+      <DependentUpon>formStartupManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\RegistryEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -73,8 +126,14 @@
     <Compile Include="Forms\TaskManagerForm.Designer.cs">
       <DependentUpon>TaskManagerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Handlers\ClipboardHandler.cs" />
+    <Compile Include="Handlers\ConnectionsHandler.cs" />
+    <Compile Include="Handlers\ConsoleHandler.cs" />
+    <Compile Include="Handlers\FileExplorerHandler.cs" />
+    <Compile Include="Handlers\MiscHandler.cs" />
     <Compile Include="Handlers\PingHandler.cs" />
     <Compile Include="Handlers\RegistryEditorHandler.cs" />
+    <Compile Include="Handlers\StartupManagerhandler.cs" />
     <Compile Include="Handlers\TaskManagerHandler.cs" />
     <Compile Include="ServerPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,6 +150,33 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\editRegistryKeyForm.resx">
       <DependentUpon>editRegistryKeyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FileExplorerForm.resx">
+      <DependentUpon>FileExplorerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\formClipboard.resx">
+      <DependentUpon>formClipboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\formConnections.resx">
+      <DependentUpon>formConnections.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\formConsole.resx">
+      <DependentUpon>formConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\formDownloadFile.resx">
+      <DependentUpon>formDownloadFile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\formFileProperties.resx">
+      <DependentUpon>formFileProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\formInput.resx">
+      <DependentUpon>formInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\formMemoryEdit.resx">
+      <DependentUpon>formMemoryEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\formStartupManager.resx">
+      <DependentUpon>formStartupManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\RegistryEditorForm.resx">
       <DependentUpon>RegistryEditorForm.cs</DependentUpon>

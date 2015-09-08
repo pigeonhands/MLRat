@@ -8,9 +8,9 @@ namespace MLSurveillanceClient.Handlers
 {
     public static class RemoteChatHandler
     {
-        private static IClientConnection NetworkHost;
+        private static IClientHost NetworkHost;
         private static RemoteChatForm chatForm = null;
-        public static void SetNetworkHost(IClientConnection network)
+        public static void SetNetworkHost(IClientHost network)
         {
             NetworkHost = network;
             if (chatForm != null)

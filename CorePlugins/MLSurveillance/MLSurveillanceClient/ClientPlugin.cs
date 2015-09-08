@@ -29,7 +29,7 @@ namespace MLSurveillanceClient
             RemoteChatHandler.Disconnect();
         }
 
-        public void OnPluginLoad(IClientConnection server)
+        public void OnPluginLoad(IClientHost server)
         {
             RemoteChatHandler.SetNetworkHost(server);
             RemoteDesktopHandler.SetNetworkHost(server);

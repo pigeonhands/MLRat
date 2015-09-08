@@ -27,6 +27,7 @@ namespace MLSurveillanceServer.Handlers
             {
                 var form = new RemoteDesktopForm(client);
                 form.FormClosed += Form_FormClosed;
+                form.Text = string.Format("File Explorer ({0})", client.GetVariable<string>("Username", ""));
                 formHandler[client.ID] = form;
                 form.Show();
             }

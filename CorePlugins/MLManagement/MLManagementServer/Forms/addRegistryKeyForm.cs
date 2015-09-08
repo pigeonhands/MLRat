@@ -25,5 +25,10 @@ namespace MLManagementServer.Forms
             NewValue = textBox2.Text;
             DialogResult = DialogResult.OK;
         }
+
+        private void addRegistryKeyForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

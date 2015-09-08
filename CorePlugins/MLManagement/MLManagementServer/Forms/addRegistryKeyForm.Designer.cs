@@ -90,6 +90,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "addRegistryKeyForm";
             this.Text = "Add Key";
+            this.Load += new System.EventHandler(this.addRegistryKeyForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

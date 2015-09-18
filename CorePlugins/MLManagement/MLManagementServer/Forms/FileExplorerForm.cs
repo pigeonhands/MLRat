@@ -23,7 +23,7 @@ namespace MLManagementServer.Forms
         formFileProperties FilePropertyForm = null;
         ImageList images = new ImageList();
         IServerUIHandler UIHost;
-        bool customIcons = true;
+        bool customIcons = false;
         public FileExplorerForm(IServerUIHandler UIHandler, IClient c)
         {
             Client = c;
@@ -127,20 +127,23 @@ namespace MLManagementServer.Forms
             ListViewItem i = new ListViewItem(name);
             i.Tag = false;
             i.ImageKey = "File";
-            string fullExt = Path.GetExtension(name).ToLower();
-            string extention = fullExt.Substring(1, fullExt.Length - 1);
-            if (!images.Images.ContainsKey(extention))
+            if (customIcons)
             {
-                Image extImage = UIHost.GetImage(string.Format("FileExtention/file_extension_{0}.png", extention));
-                if (extImage != null)
+                string fullExt = Path.GetExtension(name).ToLower();
+                string extention = fullExt.Substring(1, fullExt.Length - 1);
+                if (!images.Images.ContainsKey(extention))
                 {
-                    images.Images.Add(extention, extImage);
+                    Image extImage = UIHost.GetImage(string.Format("FileExtention/file_extension_{0}.png", extention));
+                    if (extImage != null)
+                    {
+                        images.Images.Add(extention, extImage);
+                        i.ImageKey = extention;
+                    }
+                }
+                else
+                {
                     i.ImageKey = extention;
                 }
-            }
-            else
-            {
-                i.ImageKey = extention;
             }
             i.SubItems.Add(size);
             AddItem(i);

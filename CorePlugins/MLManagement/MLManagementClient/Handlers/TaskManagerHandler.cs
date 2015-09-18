@@ -23,7 +23,42 @@ namespace MLManagementClient.Handlers
             TaskManagerCommand command = (TaskManagerCommand)data[1];
 
             if (command == TaskManagerCommand.GetProcesses) GetProcesses();
-            if(command == TaskManagerCommand.ReadMemory)
+            if (command == TaskManagerCommand.WriteMemory)
+            {
+                int id = (int)data[2];
+                string module = (string)data[3];
+                int offset = (int)data[4];
+                int newValue = (int)data[5];
+                Process p = Process.GetProcessById(id);
+                if (p.HasExited)
+                {
+                    NetworkHost.Send((byte)NetworkCommand.TaskManager, (byte)TaskManagerCommand.InvalidProcess);
+                }
+                else
+                {
+                    ProcessModule procMod = null;
+                    foreach (ProcessModule m in p.Modules)
+                    {
+                        if (m.ModuleName == module)
+                        {
+                            procMod = m;
+                            break;
+                        }
+                    }
+                    try
+                    {
+                        if (procMod == null) return;
+                        IntPtr addressWrite = (IntPtr)((int)procMod.BaseAddress + offset);
+                        WriteProcessMemory(p.Handle, addressWrite, ref newValue, 4, 0);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                        NetworkHost.Send((byte)NetworkCommand.TaskManager, (byte)TaskManagerCommand.InvalidProcess);
+                    }
+                }
+            }
+            if (command == TaskManagerCommand.ReadMemory)
             {
                 int id = (int)data[2];
                 string module = (string)data[3];
@@ -57,8 +92,6 @@ namespace MLManagementClient.Handlers
                         Console.WriteLine(ex.ToString());
                         NetworkHost.Send((byte)NetworkCommand.TaskManager, (byte)TaskManagerCommand.InvalidProcess);
                     }
-                    
-                    
                 }
             }
             if(command == TaskManagerCommand.GetModules)
@@ -121,6 +154,9 @@ namespace MLManagementClient.Handlers
             }
             NetworkHost.Send((byte)NetworkCommand.TaskManager, (byte)TaskManagerCommand.ProcessList, ProcessNames, procIds, windowText, currentProc.Id);
         }
+
+        [DllImport("kernel32.dll")]
+        public static extern void WriteProcessMemory(IntPtr handle, IntPtr baseAddress, ref int buffer, int sizeBuffer, int BytesRead);
 
         [DllImport("Kernel32.dll")]
         private static extern void ReadProcessMemory(IntPtr handle, IntPtr baseAddress, ref int buffer, int sizeofBuffer, int bytesRead);

@@ -187,7 +187,7 @@ namespace MLManagementServer.Forms
             int id = (int)i.Tag;
             using (memoryEditForm = new formMemoryEdit(Client, id))
             {
-                memoryEditForm.Text = string.Format("Edit memory ({0})", i.SubItems[2].Text);
+                memoryEditForm.Text = string.Format("Edit memory ({0} - PID: {1})", i.SubItems[2].Text, id);
                 memoryEditForm.ShowDialog();
             }
             memoryEditForm = null;

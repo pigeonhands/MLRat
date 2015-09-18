@@ -42,6 +42,8 @@
             this.apptadaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.desktopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.visualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showCustomIconsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.downloadFileHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,8 +63,6 @@
             this.copyHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeFromBucketToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.visualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showCustomIconsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmFileExplorer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -114,7 +114,7 @@
             this.deleteFileToolStripMenuItem,
             this.propertiesToolStripMenuItem});
             this.cmFileExplorer.Name = "cmFileExplorer";
-            this.cmFileExplorer.Size = new System.Drawing.Size(214, 202);
+            this.cmFileExplorer.Size = new System.Drawing.Size(214, 224);
             // 
             // executeToolStripMenuItem
             // 
@@ -184,6 +184,22 @@
             this.refreshToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
             this.refreshToolStripMenuItem.Text = "Refresh";
             this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
+            // 
+            // visualToolStripMenuItem
+            // 
+            this.visualToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showCustomIconsToolStripMenuItem});
+            this.visualToolStripMenuItem.Name = "visualToolStripMenuItem";
+            this.visualToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.visualToolStripMenuItem.Text = "Visual";
+            // 
+            // showCustomIconsToolStripMenuItem
+            // 
+            this.showCustomIconsToolStripMenuItem.CheckOnClick = true;
+            this.showCustomIconsToolStripMenuItem.Name = "showCustomIconsToolStripMenuItem";
+            this.showCustomIconsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.showCustomIconsToolStripMenuItem.Text = "Show custom icons";
+            this.showCustomIconsToolStripMenuItem.Click += new System.EventHandler(this.showCustomIconsToolStripMenuItem_Click);
             // 
             // copyToolStripMenuItem
             // 
@@ -348,24 +364,6 @@
             this.removeFromBucketToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.removeFromBucketToolStripMenuItem.Text = "Remove from bucket";
             this.removeFromBucketToolStripMenuItem.Click += new System.EventHandler(this.removeFromBucketToolStripMenuItem_Click);
-            // 
-            // visualToolStripMenuItem
-            // 
-            this.visualToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.showCustomIconsToolStripMenuItem});
-            this.visualToolStripMenuItem.Name = "visualToolStripMenuItem";
-            this.visualToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
-            this.visualToolStripMenuItem.Text = "Visual";
-            // 
-            // showCustomIconsToolStripMenuItem
-            // 
-            this.showCustomIconsToolStripMenuItem.Checked = true;
-            this.showCustomIconsToolStripMenuItem.CheckOnClick = true;
-            this.showCustomIconsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.showCustomIconsToolStripMenuItem.Name = "showCustomIconsToolStripMenuItem";
-            this.showCustomIconsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-            this.showCustomIconsToolStripMenuItem.Text = "Show custom icons";
-            this.showCustomIconsToolStripMenuItem.Click += new System.EventHandler(this.showCustomIconsToolStripMenuItem_Click);
             // 
             // FileExplorerForm
             // 

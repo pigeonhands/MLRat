@@ -550,14 +550,22 @@ namespace MLRat.Forms
                     br.Write(tbIPBuild.Text);
                     resource = ms.ToArray();
                 }
-                GCHandle handle = GCHandle.Alloc(resource, GCHandleType.Pinned);
-
-                if (!UpdateResource(resourcePointer, "RT_RCDATA", "Settings", 1066, handle.AddrOfPinnedObject(), Convert.ToUInt32(resource.Length)))
-                    throw new Exception();
-                if (!EndUpdateResource(resourcePointer, false))
-                    throw new Exception();
-
-                handle.Free();
+                //GCHandle handle = GCHandle.Alloc(resource, GCHandleType.Pinned);
+                IntPtr handle = Marshal.AllocHGlobal(resource.Length);
+                try
+                {
+                    Marshal.Copy(resource, 0, handle, resource.Length);
+                    if (!UpdateResource(resourcePointer, "RT_RCDATA", "Settings", 0, handle/*handle.AddrOfPinnedObject()*/, Convert.ToUInt32(resource.Length)))
+                        throw new Exception();
+                    if (!EndUpdateResource(resourcePointer, false))
+                        throw new Exception();
+                }
+                finally
+                {
+                    Marshal.Release(handle);
+                }
+               
+                //handle.Free();
                 MessageBox.Show("Built!");
             }
             catch

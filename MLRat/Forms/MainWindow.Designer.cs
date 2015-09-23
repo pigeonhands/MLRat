@@ -155,7 +155,7 @@
             this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Location = new System.Drawing.Point(198, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(247, 124);
+            this.groupBox1.Size = new System.Drawing.Size(247, 109);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Builder";
@@ -210,7 +210,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(9, 88);
+            this.button2.Location = new System.Drawing.Point(9, 75);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(226, 27);
             this.button2.TabIndex = 0;
@@ -342,6 +342,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(695, 249);
             this.Controls.Add(this.tabControl1);
+            this.MinimumSize = new System.Drawing.Size(711, 288);
             this.Name = "MainWindow";
             this.Text = "MLRat";
             this.Load += new System.EventHandler(this.MainWindow_Load);

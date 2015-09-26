@@ -44,6 +44,7 @@ namespace MLManagementClient.Handlers
                 psi.RedirectStandardOutput = true;
                 psi.RedirectStandardError = true;
                 psi.WindowStyle = ProcessWindowStyle.Hidden;
+                psi.CreateNoWindow = true;
                 console = Process.Start(psi);
 
                 consoleThread = new Thread(() =>
